@@ -1,13 +1,17 @@
 'use client'
 
-import { useState, memo } from 'react'
+import { useState, useEffect, memo } from 'react'
 import UserProfile from './UserProfile'
+import { getTrendingMovies, getNowPlayingMovies, getImageUrl, formatCurrency, TMDBMovie } from '../lib/tmdb'
 
 const Dashboard = memo(function Dashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
   const [showBrowseLeagues, setShowBrowseLeagues] = useState(false)
   const [selectedLeague, setSelectedLeague] = useState<any>(null)
+  const [trendingMovies, setTrendingMovies] = useState<TMDBMovie[]>([])
+  const [nowPlayingMovies, setNowPlayingMovies] = useState<TMDBMovie[]>([])
+  const [isLoadingMovies, setIsLoadingMovies] = useState(true)
 
   const leagues = [
     { 
@@ -48,6 +52,29 @@ const Dashboard = memo(function Dashboard() {
     { user: 'MovieMaverick', action: 'traded', movie: 'Dune 3', time: '12 min ago', profit: '+$342M' },
     { user: 'CinemaQueen', action: 'joined', league: 'Elite League', time: '15 min ago', profit: null },
   ]
+
+  // Fetch real movie data from TMDB
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        setIsLoadingMovies(true)
+        const [trending, nowPlaying] = await Promise.all([
+          getTrendingMovies(),
+          getNowPlayingMovies()
+        ])
+        
+        setTrendingMovies(trending.slice(0, 6)) // Top 6 trending
+        setNowPlayingMovies(nowPlaying.slice(0, 6)) // Top 6 now playing
+      } catch (error) {
+        console.error('Error fetching movies:', error)
+        // Keep the UI working even if API fails
+      } finally {
+        setIsLoadingMovies(false)
+      }
+    }
+
+    fetchMovies()
+  }, [])
 
   return (
     <div className="px-4 py-6">
@@ -149,6 +176,107 @@ const Dashboard = memo(function Dashboard() {
             </button>
           </div>
         ))}
+      </div>
+
+      {/* Hot Movies Now - TMDB Integration */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-3xl font-black text-white">🔥 Hot Movies Now</h2>
+          <span className="text-sm text-gray-400">Live from TMDB</span>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+          {isLoadingMovies ? (
+            // Loading skeletons
+            [...Array(6)].map((_, i) => (
+              <div key={i} className="glass-dark rounded-xl p-4 animate-pulse">
+                <div className="bg-gray-700 rounded-lg h-32 mb-3"></div>
+                <div className="bg-gray-700 rounded h-4 mb-2"></div>
+                <div className="bg-gray-700 rounded h-3"></div>
+              </div>
+            ))
+          ) : (
+            trendingMovies.map((movie) => (
+              <div
+                key={movie.id}
+                className="glass-dark rounded-xl overflow-hidden transform hover:scale-105 transition-all duration-300 cursor-pointer group"
+                onClick={() => {/* TODO: Open movie details */}}
+              >
+                <div className="aspect-[2/3] relative overflow-hidden">
+                  <img
+                    src={getImageUrl(movie.poster_path)}
+                    alt={movie.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder-movie.jpg'
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute bottom-2 left-2 right-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                    <p className="text-white font-bold text-sm truncate">{movie.title}</p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <span className="text-yellow-400 text-xs">⭐ {movie.vote_average.toFixed(1)}</span>
+                      {movie.revenue && (
+                        <span className="text-green-400 text-xs">{formatCurrency(movie.revenue)}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Now Playing Section */}
+        <div className="mb-6">
+          <h3 className="text-xl font-bold text-white mb-4">🎬 Now in Theaters</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {isLoadingMovies ? (
+              [...Array(3)].map((_, i) => (
+                <div key={i} className="glass-dark rounded-xl p-4 animate-pulse">
+                  <div className="flex space-x-4">
+                    <div className="bg-gray-700 rounded w-16 h-24"></div>
+                    <div className="flex-1">
+                      <div className="bg-gray-700 rounded h-4 mb-2"></div>
+                      <div className="bg-gray-700 rounded h-3 mb-2"></div>
+                      <div className="bg-gray-700 rounded h-3 w-1/2"></div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              nowPlayingMovies.slice(0, 3).map((movie) => (
+                <div
+                  key={movie.id}
+                  className="glass-dark rounded-xl p-4 hover:card-glow transition-all cursor-pointer"
+                  onClick={() => {/* TODO: Open movie details */}}
+                >
+                  <div className="flex space-x-4">
+                    <img
+                      src={getImageUrl(movie.poster_path, 'w185')}
+                      alt={movie.title}
+                      className="w-16 h-24 object-cover rounded-lg"
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholder-movie.jpg'
+                      }}
+                    />
+                    <div className="flex-1">
+                      <h4 className="text-white font-bold text-sm mb-1 line-clamp-2">{movie.title}</h4>
+                      <p className="text-gray-400 text-xs mb-2 line-clamp-2">{movie.overview}</p>
+                      <div className="flex items-center space-x-3 text-xs">
+                        <span className="text-yellow-400">⭐ {movie.vote_average.toFixed(1)}</span>
+                        <span className="text-blue-400">📅 {new Date(movie.release_date).toLocaleDateString()}</span>
+                        {movie.revenue && movie.revenue > 0 && (
+                          <span className="text-green-400">💰 {formatCurrency(movie.revenue)}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
