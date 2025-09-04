@@ -9,6 +9,7 @@ export default function Home() {
   const [currentView, setCurrentView] = useState('landing')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [activeDrafts, setActiveDrafts] = useState<any[]>([]) // Track active drafts
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -224,16 +225,21 @@ export default function Home() {
                 >
                   Roster
                 </button>
-                <button
-                  onClick={() => setCurrentView('draft')}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
-                    currentView === 'draft' 
-                      ? 'gradient-blue text-white shadow-lg transform scale-105' 
-                      : 'text-gray-300 hover:text-white glass hover:card-glow'
-                  }`}
-                >
-                  Draft Room
-                </button>
+                {activeDrafts.length > 0 && (
+                  <button
+                    onClick={() => setCurrentView('draft')}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 relative ${
+                      currentView === 'draft' 
+                        ? 'gradient-blue text-white shadow-lg transform scale-105' 
+                        : 'text-gray-300 hover:text-white glass hover:card-glow'
+                    }`}
+                  >
+                    Draft Room
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                      {activeDrafts.length}
+                    </span>
+                  </button>
+                )}
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -258,7 +264,20 @@ export default function Home() {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {currentView === 'dashboard' && <Dashboard />}
         {currentView === 'roster' && <RosterManagement />}
-        {currentView === 'draft' && <DraftRoom />}
+        {currentView === 'draft' && activeDrafts.length > 0 && <DraftRoom />}
+        {currentView === 'draft' && activeDrafts.length === 0 && (
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">⏰</div>
+            <h2 className="text-3xl font-bold text-white mb-3">No Active Drafts</h2>
+            <p className="text-gray-400 text-lg mb-6">Draft rooms will appear here when leagues start drafting</p>
+            <button 
+              onClick={() => setCurrentView('dashboard')}
+              className="gradient-blue text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transform hover:scale-105 transition-all"
+            >
+              Back to Dashboard
+            </button>
+          </div>
+        )}
       </main>
     </div>
   )

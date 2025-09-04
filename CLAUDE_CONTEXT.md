@@ -8,7 +8,7 @@
 
 ## 📁 Project Structure
 ```
-/Users/trahe/Desktop/Fantasy Flix/fantasy-movie-league/
+fantasy-movie-league/
 ├── app/                    # Next.js app directory
 │   ├── page.tsx           # Main landing/login page
 │   ├── layout.tsx         # Root layout with metadata
@@ -113,10 +113,14 @@ TMDB_API_KEY=your_tmdb_key
 
 ## 💻 Development Commands
 ```bash
-# Current directory
-cd "/Users/trahe/Desktop/Fantasy Flix/fantasy-movie-league"
+# Clone the repository
+git clone <repository-url>
+cd fantasy-movie-league
 
-# Run dev server (currently on port 3000)
+# Install dependencies
+npm install
+
+# Run dev server (starts on port 3000)
 npm run dev
 
 # Build for production
@@ -152,8 +156,8 @@ npm run build
 
 ## 🔄 Session Recovery
 To continue development:
-1. Navigate to: `/Users/trahe/Desktop/Fantasy Flix/fantasy-movie-league`
-2. Server should be on http://localhost:3000
+1. Navigate to your cloned `fantasy-movie-league` directory
+2. Run `npm run dev` to start server on http://localhost:3000
 3. Main files to edit are in `/app` and `/components`
 4. Color scheme uses blues/grays now, not purple
 5. App is called "Fantasy Flix"

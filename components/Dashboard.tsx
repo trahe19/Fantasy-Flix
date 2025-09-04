@@ -13,45 +13,11 @@ const Dashboard = memo(function Dashboard() {
   const [nowPlayingMovies, setNowPlayingMovies] = useState<TMDBMovie[]>([])
   const [isLoadingMovies, setIsLoadingMovies] = useState(true)
 
-  const leagues = [
-    { 
-      id: 1, 
-      name: 'WHATEVER', 
-      teams: 248, 
-      maxTeams: 500, 
-      status: 'Period 1 🔥',
-      myRank: 12,
-      myScore: 987500000,
-      trending: 'up'
-    },
-    { 
-      id: 2, 
-      name: 'Hollywood Billionaires', 
-      teams: 1847, 
-      maxTeams: 2000, 
-      status: 'Championship',
-      myRank: 3,
-      myScore: 1246800000,
-      trending: 'hot'
-    },
-    { 
-      id: 3, 
-      name: 'Rookie Moguls', 
-      teams: 456, 
-      maxTeams: 1000, 
-      status: 'Drafting Now',
-      myRank: null,
-      myScore: 0,
-      trending: 'new'
-    },
-  ]
+  // TODO: Replace with real leagues from database
+  const [leagues, setLeagues] = useState<any[]>([]) // Start with no leagues
 
-  const liveActivity = [
-    { user: 'BoxOfficeBeast', action: 'drafted', movie: 'Avatar 5', time: '2 min ago', profit: '+$523M' },
-    { user: 'TopTrader99', action: 'won period', league: 'Elite League', time: '5 min ago', profit: '+$1.2B' },
-    { user: 'MovieMaverick', action: 'traded', movie: 'Dune 3', time: '12 min ago', profit: '+$342M' },
-    { user: 'CinemaQueen', action: 'joined', league: 'Elite League', time: '15 min ago', profit: null },
-  ]
+  // TODO: Replace with real activity from database
+  const [liveActivity, setLiveActivity] = useState<any[]>([]) // Start with no activity
 
   // Fetch real movie data from TMDB
   useEffect(() => {
@@ -136,7 +102,7 @@ const Dashboard = memo(function Dashboard() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3 mb-8">
-        {leagues.map((league) => (
+        {leagues.length > 0 ? leagues.map((league) => (
           <div key={league.id} className="glass-dark rounded-2xl p-6 hover:card-glow transition-all transform hover:scale-105">
             <div className="flex justify-between items-start mb-4">
               <div>
@@ -175,7 +141,19 @@ const Dashboard = memo(function Dashboard() {
               Enter League →
             </button>
           </div>
-        ))}
+        )) : (
+          <div className="col-span-full text-center py-16">
+            <div className="text-6xl mb-4">🎬</div>
+            <h3 className="text-2xl font-bold text-white mb-3">No Leagues Yet</h3>
+            <p className="text-gray-400 text-lg mb-6">Ready to start your fantasy movie journey?</p>
+            <button 
+              onClick={() => setShowCreateModal(true)}
+              className="gradient-blue text-white px-8 py-4 rounded-xl font-bold hover:opacity-90 transform hover:scale-105 transition-all text-lg"
+            >
+              Create Your First League 🚀
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Hot Movies Now - TMDB Integration */}
@@ -284,114 +262,59 @@ const Dashboard = memo(function Dashboard() {
         <div className="glass-dark rounded-2xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-bold text-white">🔴 Live Activity</h3>
-            <span className="animate-pulse text-red-500 text-sm">● LIVE</span>
+            <span className="text-gray-500 text-sm">● WAITING FOR ACTIVITY</span>
           </div>
           <div className="space-y-3">
-            {liveActivity.map((activity, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 glass rounded-xl hover:scale-105 transition-all">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full gradient-blue flex items-center justify-center text-white font-bold">
-                    {activity.user[0]}
+            {liveActivity.length > 0 ? (
+              liveActivity.map((activity, idx) => (
+                <div key={idx} className="flex items-center justify-between p-3 glass rounded-xl hover:scale-105 transition-all">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-full gradient-blue flex items-center justify-center text-white font-bold">
+                      {activity.user[0]}
+                    </div>
+                    <div>
+                      <p 
+                        className="text-white font-medium cursor-pointer hover:text-blue-400"
+                        onClick={() => setSelectedUser(activity.user)}
+                      >
+                        {activity.user}
+                      </p>
+                      <p className="text-gray-400 text-sm">
+                        {activity.action} {activity.movie || activity.league}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p 
-                      className="text-white font-medium cursor-pointer hover:text-blue-400"
-                      onClick={() => setSelectedUser(activity.user)}
-                    >
-                      {activity.user}
-                    </p>
-                    <p className="text-gray-400 text-sm">
-                      {activity.action} {activity.movie || activity.league}
-                    </p>
+                  <div className="text-right">
+                    {activity.profit && (
+                      <p className="text-green-400 font-bold">{activity.profit}</p>
+                    )}
+                    <p className="text-gray-500 text-xs">{activity.time}</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  {activity.profit && (
-                    <p className="text-green-400 font-bold">{activity.profit}</p>
-                  )}
-                  <p className="text-gray-500 text-xs">{activity.time}</p>
-                </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-4xl mb-3">📡</div>
+                <p className="text-gray-400 text-lg font-medium mb-2">No Activity Yet</p>
+                <p className="text-gray-500 text-sm">Activity will appear here when players join leagues and make moves</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
-        {/* Top Performers */}
+        {/* Global Leaderboard */}
         <div className="glass-dark rounded-2xl p-6">
           <h3 className="text-xl font-bold text-white mb-4">🏆 Global Leaderboard</h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 gradient-gold rounded-xl">
-              <div className="flex items-center space-x-3">
-                <span className="text-2xl">👑</span>
-                <div>
-                  <p 
-                    className="font-bold text-white cursor-pointer hover:text-blue-400"
-                    onClick={() => setSelectedUser('BoxOfficeLegend')}
-                  >
-                    BoxOfficeLegend
-                  </p>
-                  <p className="text-sm text-gray-200">8 Championships</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-white font-bold">$12.3B</p>
-                <p className="text-yellow-300 text-xs">+342% ↑</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between p-3 glass rounded-xl">
-              <div className="flex items-center space-x-3">
-                <span className="text-xl">🥈</span>
-                <div>
-                  <p 
-                    className="font-bold text-white cursor-pointer hover:text-blue-400"
-                    onClick={() => setSelectedUser('MovieMogul88')}
-                  >
-                    MovieMogul88
-                  </p>
-                  <p className="text-sm text-gray-400">5 Championships</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-white font-bold">$8.7B</p>
-                <p className="text-green-400 text-xs">+215% ↑</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between p-3 glass rounded-xl">
-              <div className="flex items-center space-x-3">
-                <span className="text-xl">🥉</span>
-                <div>
-                  <p 
-                    className="font-bold text-white cursor-pointer hover:text-blue-400"
-                    onClick={() => setSelectedUser('BoxOfficeBoss')}
-                  >
-                    BoxOfficeBoss
-                  </p>
-                  <p className="text-sm text-gray-400">4 Championships</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-white font-bold">$6.2B</p>
-                <p className="text-green-400 text-xs">+187% ↑</p>
-              </div>
-            </div>
-
-            <div className="mt-4 p-3 glass rounded-xl border border-blue-500">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <span className="text-lg">⭐</span>
-                  <div>
-                    <p className="font-bold text-blue-400">You</p>
-                    <p className="text-sm text-gray-400">Rising Star</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-white font-bold">$2.4B</p>
-                  <p className="text-yellow-400 text-xs">+89% ↑</p>
-                </div>
-              </div>
-            </div>
+          <div className="text-center py-8">
+            <div className="text-4xl mb-3">🏆</div>
+            <p className="text-gray-400 text-lg font-medium mb-2">No Rankings Yet</p>
+            <p className="text-gray-500 text-sm mb-4">The leaderboard will populate as players compete in leagues</p>
+            <button 
+              onClick={() => setShowCreateModal(true)}
+              className="gradient-blue text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transform hover:scale-105 transition-all"
+            >
+              Create First League 🚀
+            </button>
           </div>
         </div>
       </div>
@@ -453,24 +376,19 @@ const Dashboard = memo(function Dashboard() {
               <h3 className="text-2xl font-black text-gradient">Browse Public Leagues</h3>
               <button onClick={() => setShowBrowseLeagues(false)} className="text-gray-400 hover:text-white text-2xl">×</button>
             </div>
-            <div className="grid gap-4">
-              {[
-                { name: 'World Championship League', players: '8,472/10,000', prize: '$100,000', level: 'Expert' },
-                { name: 'Beginner\'s Luck', players: '234/500', prize: '$500', level: 'Rookie' },
-                { name: 'Hollywood High Rollers', players: '47/100', prize: '$25,000', level: 'Pro' },
-                { name: 'Weekend Warriors', players: '892/1,000', prize: '$2,000', level: 'Casual' },
-              ].map((league, idx) => (
-                <div key={idx} className="glass rounded-xl p-4 flex justify-between items-center hover:neon-glow transition-all">
-                  <div>
-                    <h4 className="text-white font-bold">{league.name}</h4>
-                    <p className="text-gray-400 text-sm">{league.players} players • {league.level}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-yellow-400 font-bold">{league.prize}</p>
-                    <button className="mt-2 px-4 py-1 gradient-blue text-white rounded-lg text-sm">Join</button>
-                  </div>
-                </div>
-              ))}
+            <div className="text-center py-12">
+              <div className="text-5xl mb-4">🏆</div>
+              <h4 className="text-white font-bold text-xl mb-2">No Public Leagues Yet</h4>
+              <p className="text-gray-400 mb-6">Be the first to create a public league!</p>
+              <button 
+                onClick={() => {
+                  setShowBrowseLeagues(false)
+                  setShowCreateModal(true)
+                }}
+                className="gradient-blue text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transform hover:scale-105 transition-all"
+              >
+                Create First League 🚀
+              </button>
             </div>
           </div>
         </div>
