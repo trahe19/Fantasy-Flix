@@ -161,33 +161,33 @@ const RosterManagement = memo(function RosterManagement() {
               {[
                 { 
                   title: "Avatar: Fire and Ash", 
-                  projection: "$2.5B+", 
-                  date: "Dec 2025",
-                  confidence: "🔥 MEGA HIT"
+                  projection: "$2.2B+", 
+                  date: "Dec 19, 2025",
+                  confidence: "🔥 MEGA BLOCKBUSTER"
                 },
                 { 
                   title: "Zootopia 2", 
-                  projection: "$1.15B", 
-                  date: "Nov 26, 2025",
-                  confidence: "🎯 SURE BET"
-                },
-                { 
-                  title: "Wicked: For Good", 
                   projection: "$800M+", 
-                  date: "Nov 21, 2025",
-                  confidence: "🎭 BROADWAY GOLD"
+                  date: "Nov 26, 2025",
+                  confidence: "🎯 DISNEY SEQUEL"
                 },
                 { 
-                  title: "How to Train Your Dragon (Live)", 
-                  projection: "$500M+", 
-                  date: "Jun 13, 2025",
-                  confidence: "🐉 REMAKE MAGIC"
-                },
-                { 
-                  title: "Superman", 
+                  title: "TRON: Ares", 
                   projection: "$400M+", 
-                  date: "Jul 11, 2025",
-                  confidence: "🦸 DC REBOOT"
+                  date: "Oct 10, 2025",
+                  confidence: "🔥 FRANCHISE REBOOT"
+                },
+                { 
+                  title: "Five Nights at Freddy's 2", 
+                  projection: "$300M+", 
+                  date: "Dec 5, 2025",
+                  confidence: "🎬 HORROR SEQUEL"
+                },
+                { 
+                  title: "The Conjuring: Last Rites", 
+                  projection: "$150M+", 
+                  date: "Sep 5, 2025",
+                  confidence: "👻 HORROR FRANCHISE"
                 }
               ].map((pick, i) => (
                 <div key={i} className="text-sm p-3 glass rounded hover:card-glow transition-all">
@@ -198,8 +198,8 @@ const RosterManagement = memo(function RosterManagement() {
                   <div className="text-gray-400 text-xs mb-1">📅 {pick.date}</div>
                   <div className="text-xs text-blue-300">{pick.confidence}</div>
                 </div>
-              ))}
-            
+              ))
+            }
             </div>
             <div className="mt-4">
               <p className="text-gray-500 text-xs">Draft movies in leagues to build your roster</p>
