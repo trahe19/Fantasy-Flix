@@ -198,8 +198,8 @@ const RosterManagement = memo(function RosterManagement() {
                   <div className="text-gray-400 text-xs mb-1">📅 {pick.date}</div>
                   <div className="text-xs text-blue-300">{pick.confidence}</div>
                 </div>
-              ))
-            }
+              ))}
+            
             </div>
             <div className="mt-4">
               <p className="text-gray-500 text-xs">Draft movies in leagues to build your roster</p>
