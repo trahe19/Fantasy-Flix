@@ -56,9 +56,9 @@ export default function Home() {
               <span className="text-6xl">🎬</span>
             </div>
             <h1 className="text-7xl font-black mb-4 animate-pulse">
-              <span className="text-gradient">Box Office</span>
+              <span className="text-gradient">Fantasy</span>
               <br />
-              <span className="text-white">Bets</span>
+              <span className="text-white">Flix</span>
             </h1>
             <p className="text-xl text-gray-300 font-light tracking-wide">
               The most elite fantasy movie experience for true cinema connoisseurs
@@ -130,7 +130,7 @@ export default function Home() {
                   </label>
                   <input
                     type="email"
-                    defaultValue="demo@boxofficebets.com"
+                    defaultValue="demo@fantasyflix.com"
                     className="w-full px-4 py-3 bg-black bg-opacity-50 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
                     placeholder="your@email.com"
                   />
@@ -162,7 +162,7 @@ export default function Home() {
                       Entering the League...
                     </span>
                   ) : (
-                    'Enter Box Office Bets'
+                    'Enter Fantasy Flix'
                   )}
                 </button>
               </form>
@@ -201,7 +201,7 @@ export default function Home() {
           <div className="flex justify-between h-16">
             <div className="flex items-center space-x-8">
               <h1 className="text-2xl font-black text-gradient">
-                Box Office Bets 🎬
+                Fantasy Flix 🎬
               </h1>
               <div className="flex space-x-2">
                 <button

@@ -1,7 +1,7 @@
-# Claude Context - Box Office Bets Project
+# Claude Context - Fantasy Flix Project
 
 ## 🎯 Project Overview
-**Name**: Box Office Bets (formerly Grant's Sexy Time Movie League)
+**Name**: Fantasy Flix (formerly Grant's Sexy Time Movie League)
 **Type**: Fantasy Movie League Web Application
 **Status**: Active Development
 **Dev Server**: Running on http://localhost:3000
@@ -52,7 +52,7 @@
 
 ### Session Summary
 1. **Initial Creation**: Built full fantasy movie league app
-2. **Rebranding**: Changed from "Grant's Sexy Time" to "Box Office Bets"
+2. **Rebranding**: Changed from "Grant's Sexy Time" to "Fantasy Flix"
 3. **Feature Additions**:
    - User profiles (click usernames)
    - Movie details (click movie titles)
@@ -156,7 +156,7 @@ To continue development:
 2. Server should be on http://localhost:3000
 3. Main files to edit are in `/app` and `/components`
 4. Color scheme uses blues/grays now, not purple
-5. App is called "Box Office Bets"
+5. App is called "Fantasy Flix"
 
 ## 📌 Important Notes
 - User modified Dashboard.tsx line 15: league name to 'WHATEVER' (intentional)

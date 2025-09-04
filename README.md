@@ -1,4 +1,4 @@
-# 🎬 Box Office Bets - Fantasy Movie League
+# 🎬 Fantasy Flix - Fantasy Movie League
 
 A sophisticated fantasy movie league application where users draft movies, compete based on real box office performance, and climb the leaderboards to become cinema champions.
 
@@ -22,7 +22,7 @@ npm run dev
 - **Network** (for team sharing): http://YOUR_IP:3000
 
 ### 3. Demo Login
-- **Email**: demo@boxofficebets.com
+- **Email**: demo@fantasyflix.com
 - **Password**: demo123
 
 ## 🌐 Team Collaboration Setup
