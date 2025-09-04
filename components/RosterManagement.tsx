@@ -156,25 +156,50 @@ const RosterManagement = memo(function RosterManagement() {
           <h2 className="text-3xl font-bold text-white mb-3">No Movies Drafted Yet</h2>
           <p className="text-gray-400 text-lg mb-6">Your roster will appear here once you draft movies from leagues</p>
           <div className="max-w-md mx-auto glass-dark rounded-2xl p-6">
-            <h3 className="text-white font-bold mb-3">Real Upcoming Movies</h3>
+            <h3 className="text-white font-bold mb-3">🎯 Upcoming Picks</h3>
             <div className="space-y-2 max-h-64 overflow-y-auto">
-              {isLoadingMovies ? (
-                [...Array(5)].map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="bg-gray-700 rounded h-4 mb-1"></div>
-                    <div className="bg-gray-700 rounded h-3 w-2/3"></div>
+              {[
+                { 
+                  title: "Avatar: Fire and Ash", 
+                  projection: "$2.5B+", 
+                  date: "Dec 2025",
+                  confidence: "🔥 MEGA HIT"
+                },
+                { 
+                  title: "Zootopia 2", 
+                  projection: "$1.15B", 
+                  date: "Nov 26, 2025",
+                  confidence: "🎯 SURE BET"
+                },
+                { 
+                  title: "Wicked: For Good", 
+                  projection: "$800M+", 
+                  date: "Nov 21, 2025",
+                  confidence: "🎭 BROADWAY GOLD"
+                },
+                { 
+                  title: "How to Train Your Dragon (Live)", 
+                  projection: "$500M+", 
+                  date: "Jun 13, 2025",
+                  confidence: "🐉 REMAKE MAGIC"
+                },
+                { 
+                  title: "Superman", 
+                  projection: "$400M+", 
+                  date: "Jul 11, 2025",
+                  confidence: "🦸 DC REBOOT"
+                }
+              ].map((pick, i) => (
+                <div key={i} className="text-sm p-3 glass rounded hover:card-glow transition-all">
+                  <div className="flex justify-between items-start mb-1">
+                    <div className="text-white font-medium">{pick.title}</div>
+                    <div className="text-green-400 font-bold text-xs">{pick.projection}</div>
                   </div>
-                ))
-              ) : (
-                upcomingMovies.slice(0, 5).map((movie) => (
-                  <div key={movie.id} className="text-sm p-2 glass rounded">
-                    <div className="text-white font-medium">{movie.title}</div>
-                    <div className="text-gray-400 text-xs">
-                      📅 {new Date(movie.release_date).toLocaleDateString()}
-                    </div>
-                  </div>
-                ))
-              )}
+                  <div className="text-gray-400 text-xs mb-1">📅 {pick.date}</div>
+                  <div className="text-xs text-blue-300">{pick.confidence}</div>
+                </div>
+              ))
+            }
             </div>
             <div className="mt-4">
               <p className="text-gray-500 text-xs">Draft movies in leagues to build your roster</p>
