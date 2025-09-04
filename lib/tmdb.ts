@@ -84,8 +84,13 @@ export async function getUpcomingMovies(page: number = 1): Promise<TMDBMovie[]> 
 
 // Get now playing movies (for current scoring)
 export async function getNowPlayingMovies(page: number = 1): Promise<TMDBMovie[]> {
-  const data = await tmdbFetch(`/movie/now_playing?page=${page}&region=US`);
-  return data.results;
+  try {
+    const data = await tmdbFetch(`/movie/now_playing?page=${page}&region=US`);
+    return data.results;
+  } catch (error) {
+    console.warn('TMDB API unavailable, using fallback data');
+    return FALLBACK_NOW_PLAYING_MOVIES;
+  }
 }
 
 // Get popular movies (for featured content)
@@ -127,10 +132,118 @@ export function calculateFantasyScore(movie: MovieDetails): number {
   return Math.round(boxOfficeScore + ratingBonus + popularityBonus);
 }
 
+// Fallback movie data when API is unavailable
+const FALLBACK_TRENDING_MOVIES: TMDBMovie[] = [
+  {
+    id: 912649,
+    title: "Venom: The Last Dance",
+    overview: "Eddie and Venom are on the run. Hunted by both of their worlds and with the net closing in, the duo are forced into a devastating decision that will bring the curtains down on Venom and Eddie's last dance.",
+    release_date: "2024-10-22",
+    poster_path: "/aosm8NMQ3UyoBVpSxyimorCQykC.jpg",
+    backdrop_path: "/3V4kLQg0kSqPLctI5ziYWabAZYF.jpg",
+    genre_ids: [878, 53, 28],
+    vote_average: 6.8,
+    vote_count: 1205,
+    popularity: 3876.433
+  },
+  {
+    id: 533535,
+    title: "Deadpool & Wolverine",
+    overview: "A listless Wade Wilson toils away in civilian life with his days as the morally flexible mercenary, Deadpool, behind him. But when his homeworld faces an existential threat, Wade must reluctantly suit-up again with an even more reluctant Wolverine.",
+    release_date: "2024-07-24",
+    poster_path: "/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg",
+    backdrop_path: "/yDHYTfA3R0jFYba4zF1kmufbfeD.jpg",
+    genre_ids: [28, 35, 878],
+    vote_average: 7.7,
+    vote_count: 5234,
+    popularity: 2845.123
+  },
+  {
+    id: 845781,
+    title: "Red One",
+    overview: "After Santa Claus—Code Name: RED ONE—is kidnapped, the North Pole's Head of Security must team up with the world's most infamous tracker in a globe-trotting, action-packed mission to save Christmas.",
+    release_date: "2024-10-31",
+    poster_path: "/cdqLnri3NEGcmfnqwk2TSIYtddg.jpg",
+    backdrop_path: "/tElnmtQ6yz1PjN1kePNl8yMSb59.jpg",
+    genre_ids: [28, 35, 14],
+    vote_average: 6.9,
+    vote_count: 892,
+    popularity: 2234.567
+  },
+  {
+    id: 1034541,
+    title: "Terrifier 3",
+    overview: "Five years after surviving Art the Clown's Halloween massacre, Sienna and Jonathan are still struggling to rebuild their shattered lives. As the holiday season approaches, they try to embrace the Christmas spirit and leave the horrors of the past behind.",
+    release_date: "2024-10-09",
+    poster_path: "/63xYQj1BwRFielxsBDXvHIJyXVm.jpg",
+    backdrop_path: "/18TSJF1WLA4CkymvVUcKDBwUJ9F.jpg",
+    genre_ids: [27, 53],
+    vote_average: 6.9,
+    vote_count: 634,
+    popularity: 1876.234
+  }
+];
+
+const FALLBACK_NOW_PLAYING_MOVIES: TMDBMovie[] = [
+  {
+    id: 558449,
+    title: "Gladiator II",
+    overview: "Years after witnessing the death of the revered hero Maximus at the hands of his uncle, Lucius is forced to enter the Colosseum after his home is conquered by the tyrannical Emperors who now lead Rome with an iron fist.",
+    release_date: "2024-11-13",
+    poster_path: "/2cxhvwyEwRlysAmRH4iodkvo0z5.jpg",
+    backdrop_path: "/euYIwmwkmz95mnXvufEmbL6ovhZ.jpg",
+    genre_ids: [28, 18, 36],
+    vote_average: 6.8,
+    vote_count: 1432,
+    popularity: 2543.876
+  },
+  {
+    id: 402431,
+    title: "Wicked",
+    overview: "Elphaba, an ostracized but defiant girl born with green skin, and Glinda, a privileged aristocrat born popular, become extremely unlikely friends in the magical Land of Oz.",
+    release_date: "2024-11-20",
+    poster_path: "/c5Tqxeo1UpBvnAc3csUm7j3hlQl.jpg",
+    backdrop_path: "/uKb22E0nlzr914bA9KyA5CVCOlV.jpg",
+    genre_ids: [18, 14, 10402],
+    vote_average: 8.6,
+    vote_count: 987,
+    popularity: 3456.789
+  },
+  {
+    id: 762441,
+    title: "A Complete Unknown",
+    overview: "Set in the influential New York music scene of the early 60s, follow 19-year-old Minnesota musician Bob Dylan's meteoric rise as a folk singer to concert halls and the top of the charts.",
+    release_date: "2024-12-25",
+    poster_path: "/wfzjpy6giNKHbJfvpDCkhWgHrcd.jpg",
+    backdrop_path: "/4zlOPT9CrtIX05bBIkYxNZsm5zN.jpg",
+    genre_ids: [18, 10402],
+    vote_average: 7.2,
+    vote_count: 234,
+    popularity: 1234.567
+  },
+  {
+    id: 1241982,
+    title: "Moana 2",
+    overview: "After receiving an unexpected call from her wayfinding ancestors, Moana journeys alongside Maui and a new crew to the far seas of Oceania and into dangerous, long-lost waters for an adventure unlike anything she's ever faced.",
+    release_date: "2024-11-27",
+    poster_path: "/yh64qw9mgXBvlaWDi7Q9tpUBAvH.jpg",
+    backdrop_path: "/tElnmtQ6yz1PjN1kePNl8yMSb59.jpg",
+    genre_ids: [16, 12, 35, 10751],
+    vote_average: 7.0,
+    vote_count: 1876,
+    popularity: 4567.890
+  }
+];
+
 // Get trending movies for this week
 export async function getTrendingMovies(): Promise<TMDBMovie[]> {
-  const data = await tmdbFetch('/trending/movie/week');
-  return data.results.slice(0, 10); // Top 10 trending
+  try {
+    const data = await tmdbFetch('/trending/movie/week');
+    return data.results.slice(0, 10); // Top 10 trending
+  } catch (error) {
+    console.warn('TMDB API unavailable, using fallback data');
+    return FALLBACK_TRENDING_MOVIES;
+  }
 }
 
 // Check if a movie is still in theaters (released but revenue might still be growing)
