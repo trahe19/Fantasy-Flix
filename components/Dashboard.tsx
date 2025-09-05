@@ -2,35 +2,46 @@
 
 import { useState, useEffect, memo } from 'react'
 import UserProfile from './UserProfile'
-import { getTrendingMovies, getNowPlayingMovies, getImageUrl, formatCurrency, TMDBMovie } from '../lib/tmdb'
+import PerformanceChart, { generateMockChartData } from './PerformanceChart'
+import TabbedChart from './TabbedChart'
+import ActivityFeed, { generateMockActivity } from './ActivityFeed'
+import MovieDetailModal from './MovieDetailModal'
+import { getSeasonalMovies, get2025Movies, getImageUrl, formatCurrency, TMDBMovie } from '../lib/tmdb'
+import { getUserLeagues, getCurrentUser } from '../lib/auth'
+import { realLeagueData, getLeagueStandings, generateRealChartData } from '../lib/realLeagueData'
 
 const Dashboard = memo(function Dashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
   const [showBrowseLeagues, setShowBrowseLeagues] = useState(false)
   const [selectedLeague, setSelectedLeague] = useState<any>(null)
-  const [trendingMovies, setTrendingMovies] = useState<TMDBMovie[]>([])
-  const [nowPlayingMovies, setNowPlayingMovies] = useState<TMDBMovie[]>([])
+  const [seasonalMovies, setSeasonalMovies] = useState<TMDBMovie[]>([])
+  const [movies2025, setMovies2025] = useState<TMDBMovie[]>([])
   const [isLoadingMovies, setIsLoadingMovies] = useState(true)
+  const [currentUser, setCurrentUser] = useState(getCurrentUser())
+  const [userLeagues, setUserLeagues] = useState<any[]>([])
+  const [chartData, setChartData] = useState(() => generateRealChartData().find(player => player.player === 'Grant')?.data || generateMockChartData())
+  const [liveActivity, setLiveActivity] = useState(generateMockActivity())
+  const [selectedMovie, setSelectedMovie] = useState<TMDBMovie | null>(null)
+  const [showMovieModal, setShowMovieModal] = useState(false)
 
-  // TODO: Replace with real leagues from database
-  const [leagues, setLeagues] = useState<any[]>([]) // Start with no leagues
+  const handleMovieClick = (movie: TMDBMovie) => {
+    setSelectedMovie(movie)
+    setShowMovieModal(true)
+  }
 
-  // TODO: Replace with real activity from database
-  const [liveActivity, setLiveActivity] = useState<any[]>([]) // Start with no activity
-
-  // Fetch real movie data from TMDB
+  // Fetch 2025 seasonal movies from TMDB
   useEffect(() => {
     const fetchMovies = async () => {
       try {
         setIsLoadingMovies(true)
-        const [trending, nowPlaying] = await Promise.all([
-          getTrendingMovies(),
-          getNowPlayingMovies()
+        const [seasonal, movies2025Data] = await Promise.all([
+          getSeasonalMovies(),
+          get2025Movies()
         ])
         
-        setTrendingMovies(trending.slice(0, 6)) // Top 6 trending
-        setNowPlayingMovies(nowPlaying.slice(0, 6)) // Top 6 now playing
+        setSeasonalMovies(seasonal.slice(0, 6)) // Top 6 seasonal movies
+        setMovies2025(movies2025Data.slice(0, 6)) // Top 6 2025 movies
       } catch (error) {
         console.error('Error fetching movies:', error)
         // Keep the UI working even if API fails
@@ -42,50 +53,81 @@ const Dashboard = memo(function Dashboard() {
     fetchMovies()
   }, [])
 
+  // Load user leagues
+  useEffect(() => {
+    if (currentUser) {
+      const leagues = getUserLeagues(currentUser.id)
+      setUserLeagues(leagues)
+    }
+  }, [currentUser])
+
   return (
     <div className="px-4 py-6">
-      {/* Stats Bar */}
+      {/* League Stats */}
       <div className="grid grid-cols-4 gap-4 mb-8">
-        <div className="glass-dark rounded-2xl p-6 transform hover:scale-105 transition-all">
+        <div className="glass-elegant rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Global Players</p>
-              <p className="text-3xl font-bold text-white">12,847</p>
+              <p className="text-gray-500 dark:text-gray-400 original:text-slate-400 text-sm font-medium">League Players</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white original:text-white">4</p>
             </div>
-            <span className="text-4xl">🌍</span>
+            <div className="w-12 h-12 bg-slate-700 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+              </svg>
+            </div>
           </div>
         </div>
-        <div className="glass-dark rounded-2xl p-6 transform hover:scale-105 transition-all">
+        <div className="glass-elegant rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Total Prize Pool</p>
-              <p className="text-3xl font-bold text-gradient">$50,000</p>
+              <p className="text-gray-500 dark:text-gray-400 original:text-slate-400 text-sm font-medium">Your Position</p>
+              <p className="text-2xl font-bold text-emerald-400">#1</p>
             </div>
-            <span className="text-4xl">💎</span>
+            <div className="w-12 h-12 bg-emerald-900 bg-opacity-30 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+            </div>
           </div>
         </div>
-        <div className="glass-dark rounded-2xl p-6 transform hover:scale-105 transition-all">
+        <div className="glass-elegant rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Your Global Rank</p>
-              <p className="text-3xl font-bold text-blue-400">#127</p>
+              <p className="text-gray-500 dark:text-gray-400 original:text-slate-400 text-sm font-medium">Your Score</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white original:text-white">337</p>
             </div>
-            <span className="text-4xl">🏆</span>
+            <div className="w-12 h-12 bg-slate-700 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
           </div>
         </div>
-        <div className="glass-dark rounded-2xl p-6 transform hover:scale-105 transition-all">
+        <div className="glass-elegant rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Win Streak</p>
-              <p className="text-3xl font-bold text-yellow-400">7 🔥</p>
+              <p className="text-gray-500 dark:text-gray-400 original:text-slate-400 text-sm font-medium">Profit/Movie</p>
+              <p className="text-2xl font-bold text-emerald-400">125.5</p>
             </div>
-            <span className="text-4xl">⚡</span>
+            <div className="w-12 h-12 bg-emerald-900 bg-opacity-30 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Performance Chart Section - Near Top */}
+      {userLeagues.length > 0 && (
+        <div className="mb-8">
+          <TabbedChart data={chartData} />
+        </div>
+      )}
+
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-black text-white">Your Leagues</h2>
+        <h2 className="text-3xl font-black text-gray-900 dark:text-white original:text-white">Your Leagues</h2>
         <div className="space-x-4">
           <button
             onClick={() => setShowCreateModal(true)}
@@ -102,15 +144,15 @@ const Dashboard = memo(function Dashboard() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3 mb-8">
-        {leagues.length > 0 ? leagues.map((league) => (
+        {userLeagues.length > 0 ? userLeagues.map((league) => (
           <div key={league.id} className="glass-dark rounded-2xl p-6 hover:card-glow transition-all transform hover:scale-105">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h3 className="text-xl font-bold text-white">{league.name}</h3>
                 <div className="flex items-center space-x-2 mt-2">
-                  {league.trending === 'hot' && <span className="text-red-500 text-xs">🔥 HOT</span>}
-                  {league.trending === 'up' && <span className="text-green-500 text-xs">📈 RISING</span>}
-                  {league.trending === 'new' && <span className="text-blue-500 text-xs">✨ NEW</span>}
+                  {league.trending === 'hot' && <span className="text-red-500 text-xs font-bold">HOT</span>}
+                  {league.trending === 'up' && <span className="text-green-500 text-xs font-bold">RISING</span>}
+                  {league.trending === 'new' && <span className="text-blue-500 text-xs font-bold">NEW</span>}
                 </div>
               </div>
               <span className="px-3 py-1 gradient-blue rounded-full text-white text-xs font-bold">
@@ -120,20 +162,20 @@ const Dashboard = memo(function Dashboard() {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between text-gray-300">
                 <span>Players:</span>
-                <span className="font-bold">{league.teams.toLocaleString()}/{league.maxTeams.toLocaleString()}</span>
+                <span className="font-bold">{league.currentPlayers}/{league.maxPlayers}</span>
               </div>
-              {league.myRank && (
-                <>
-                  <div className="flex justify-between text-gray-300">
-                    <span>Your Rank:</span>
-                    <span className="font-bold text-gradient">#{league.myRank}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-300">
-                    <span>Your Score:</span>
-                    <span className="font-bold text-green-400">${(league.myScore / 1000000).toFixed(1)}M</span>
-                  </div>
-                </>
-              )}
+              <div className="flex justify-between text-gray-300">
+                <span>Entry Fee:</span>
+                <span className="font-bold text-green-400">${league.entryFee}</span>
+              </div>
+              <div className="flex justify-between text-gray-300">
+                <span>Prize Pool:</span>
+                <span className="font-bold text-gradient-gold">${league.prizePool}</span>
+              </div>
+              <div className="flex justify-between text-gray-300">
+                <span>Season:</span>
+                <span className="font-bold text-blue-400">{league.season}</span>
+              </div>
             </div>
             <button 
               onClick={() => setSelectedLeague(league)}
@@ -143,24 +185,28 @@ const Dashboard = memo(function Dashboard() {
           </div>
         )) : (
           <div className="col-span-full text-center py-16">
-            <div className="text-6xl mb-4">🎬</div>
-            <h3 className="text-2xl font-bold text-white mb-3">No Leagues Yet</h3>
+            <div className="w-16 h-16 mx-auto mb-4 bg-slate-700 rounded-lg flex items-center justify-center">
+              <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white original:text-white mb-3">No Leagues Yet</h3>
             <p className="text-gray-400 text-lg mb-6">Ready to start your fantasy movie journey?</p>
             <button 
               onClick={() => setShowCreateModal(true)}
               className="gradient-blue text-white px-8 py-4 rounded-xl font-bold hover:opacity-90 transform hover:scale-105 transition-all text-lg"
             >
-              Create Your First League 🚀
+              Create Your First League
             </button>
           </div>
         )}
       </div>
 
-      {/* Hot Movies Now - TMDB Integration */}
+      {/* Seasonal 2025 Movies - TMDB Integration */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-3xl font-black text-white">🔥 Hot Movies Now</h2>
-          <span className="text-sm text-gray-400">Live from TMDB</span>
+          <h2 className="text-3xl font-black text-gray-900 dark:text-white original:text-white">Seasonal Movies</h2>
+          <span className="text-sm text-gray-400">2025-2026 • Horror • Thriller • Drama • Mystery</span>
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
@@ -174,11 +220,11 @@ const Dashboard = memo(function Dashboard() {
               </div>
             ))
           ) : (
-            trendingMovies.map((movie) => (
+            seasonalMovies.map((movie) => (
               <div
                 key={movie.id}
                 className="glass-dark rounded-xl overflow-hidden transform hover:scale-105 transition-all duration-300 cursor-pointer group"
-                onClick={() => {/* TODO: Open movie details */}}
+                onClick={() => handleMovieClick(movie)}
               >
                 <div className="aspect-[2/3] relative overflow-hidden">
                   <img
@@ -193,7 +239,7 @@ const Dashboard = memo(function Dashboard() {
                   <div className="absolute bottom-2 left-2 right-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                     <p className="text-white font-bold text-sm truncate">{movie.title}</p>
                     <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-yellow-400 text-xs">⭐ {movie.vote_average.toFixed(1)}</span>
+                      <span className="text-yellow-400 text-xs">{movie.vote_average.toFixed(1)}/10</span>
                       {movie.revenue && (
                         <span className="text-green-400 text-xs">{formatCurrency(movie.revenue)}</span>
                       )}
@@ -205,9 +251,9 @@ const Dashboard = memo(function Dashboard() {
           )}
         </div>
 
-        {/* Now Playing Section */}
+        {/* 2025-2026 Movies Section */}
         <div className="mb-6">
-          <h3 className="text-xl font-bold text-white mb-4">🎬 Now in Theaters</h3>
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white original:text-white mb-4">2025-2026 Movies</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {isLoadingMovies ? (
               [...Array(3)].map((_, i) => (
@@ -223,11 +269,11 @@ const Dashboard = memo(function Dashboard() {
                 </div>
               ))
             ) : (
-              nowPlayingMovies.slice(0, 3).map((movie) => (
+              movies2025.slice(0, 3).map((movie) => (
                 <div
                   key={movie.id}
                   className="glass-dark rounded-xl p-4 hover:card-glow transition-all cursor-pointer"
-                  onClick={() => {/* TODO: Open movie details */}}
+                  onClick={() => handleMovieClick(movie)}
                 >
                   <div className="flex space-x-4">
                     <img
@@ -242,10 +288,10 @@ const Dashboard = memo(function Dashboard() {
                       <h4 className="text-white font-bold text-sm mb-1 line-clamp-2">{movie.title}</h4>
                       <p className="text-gray-400 text-xs mb-2 line-clamp-2">{movie.overview}</p>
                       <div className="flex items-center space-x-3 text-xs">
-                        <span className="text-yellow-400">⭐ {movie.vote_average.toFixed(1)}</span>
-                        <span className="text-blue-400">📅 {new Date(movie.release_date).toLocaleDateString()}</span>
+                        <span className="text-yellow-400">{movie.vote_average.toFixed(1)}/10</span>
+                        <span className="text-blue-400">{new Date(movie.release_date).toLocaleDateString()}</span>
                         {movie.revenue && movie.revenue > 0 && (
-                          <span className="text-green-400">💰 {formatCurrency(movie.revenue)}</span>
+                          <span className="text-green-400">{formatCurrency(movie.revenue)}</span>
                         )}
                       </div>
                     </div>
@@ -257,64 +303,47 @@ const Dashboard = memo(function Dashboard() {
         </div>
       </div>
 
+
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Live Activity Feed */}
-        <div className="glass-dark rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-bold text-white">🔴 Live Activity</h3>
-            <span className="text-gray-500 text-sm">● WAITING FOR ACTIVITY</span>
+        <ActivityFeed
+          activities={liveActivity}
+          showFilters={true}
+          maxItems={8}
+        />
+
+        {/* League Standings */}
+        <div className="glass-elegant rounded-xl p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-white">League Standings</h3>
+            <span className="text-sm text-slate-400">Current Season</span>
           </div>
+          
           <div className="space-y-3">
-            {liveActivity.length > 0 ? (
-              liveActivity.map((activity, idx) => (
-                <div key={idx} className="flex items-center justify-between p-3 glass rounded-xl hover:scale-105 transition-all">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-full gradient-blue flex items-center justify-center text-white font-bold">
-                      {activity.user[0]}
-                    </div>
-                    <div>
-                      <p 
-                        className="text-white font-medium cursor-pointer hover:text-blue-400"
-                        onClick={() => setSelectedUser(activity.user)}
-                      >
-                        {activity.user}
-                      </p>
-                      <p className="text-gray-400 text-sm">
-                        {activity.action} {activity.movie || activity.league}
-                      </p>
-                    </div>
+            {getLeagueStandings().map((player, index) => (
+              <div key={player.name} className="flex items-center justify-between p-4 bg-slate-800 bg-opacity-50 rounded-lg hover:bg-opacity-70 transition-all">
+                <div className="flex items-center space-x-4">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                    index === 0 ? 'bg-emerald-500 text-white' :
+                    index === 1 ? 'bg-slate-400 text-white' :
+                    index === 2 ? 'bg-amber-600 text-white' :
+                    'bg-slate-600 text-slate-300'
+                  }`}>
+                    {player.rank}
                   </div>
-                  <div className="text-right">
-                    {activity.profit && (
-                      <p className="text-green-400 font-bold">{activity.profit}</p>
-                    )}
-                    <p className="text-gray-500 text-xs">{activity.time}</p>
+                  <div>
+                    <p className="text-white font-medium">{player.name}</p>
+                    <p className="text-slate-400 text-sm">{player.profitableMovies}/{player.totalMovies} profitable</p>
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="text-center py-8">
-                <div className="text-4xl mb-3">📡</div>
-                <p className="text-gray-400 text-lg font-medium mb-2">No Activity Yet</p>
-                <p className="text-gray-500 text-sm">Activity will appear here when players join leagues and make moves</p>
+                <div className="text-right">
+                  <p className={`font-bold ${player.score >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {player.score > 0 ? '+' : ''}{player.score}
+                  </p>
+                  <p className="text-slate-400 text-sm">{player.profitPerMovie}/movie</p>
+                </div>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Global Leaderboard */}
-        <div className="glass-dark rounded-2xl p-6">
-          <h3 className="text-xl font-bold text-white mb-4">🏆 Global Leaderboard</h3>
-          <div className="text-center py-8">
-            <div className="text-4xl mb-3">🏆</div>
-            <p className="text-gray-400 text-lg font-medium mb-2">No Rankings Yet</p>
-            <p className="text-gray-500 text-sm mb-4">The leaderboard will populate as players compete in leagues</p>
-            <button 
-              onClick={() => setShowCreateModal(true)}
-              className="gradient-blue text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transform hover:scale-105 transition-all"
-            >
-              Create First League 🚀
-            </button>
+            ))}
           </div>
         </div>
       </div>
@@ -355,7 +384,7 @@ const Dashboard = memo(function Dashboard() {
                   onClick={() => setShowCreateModal(false)}
                   className="flex-1 gradient-blue text-white px-4 py-3 rounded-xl font-bold hover:opacity-90 transform hover:scale-105 transition-all"
                 >
-                  Create League 🚀
+                  Create League
                 </button>
               </div>
             </form>
@@ -377,7 +406,11 @@ const Dashboard = memo(function Dashboard() {
               <button onClick={() => setShowBrowseLeagues(false)} className="text-gray-400 hover:text-white text-2xl">×</button>
             </div>
             <div className="text-center py-12">
-              <div className="text-5xl mb-4">🏆</div>
+              <div className="w-16 h-16 mx-auto mb-4 bg-slate-700 rounded-lg flex items-center justify-center">
+                <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+              </div>
               <h4 className="text-white font-bold text-xl mb-2">No Public Leagues Yet</h4>
               <p className="text-gray-400 mb-6">Be the first to create a public league!</p>
               <button 
@@ -387,7 +420,7 @@ const Dashboard = memo(function Dashboard() {
                 }}
                 className="gradient-blue text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transform hover:scale-105 transition-all"
               >
-                Create First League 🚀
+                Create First League
               </button>
             </div>
           </div>
@@ -426,6 +459,18 @@ const Dashboard = memo(function Dashboard() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Movie Detail Modal */}
+      {selectedMovie && (
+        <MovieDetailModal
+          movie={selectedMovie}
+          isOpen={showMovieModal}
+          onClose={() => {
+            setShowMovieModal(false)
+            setSelectedMovie(null)
+          }}
+        />
       )}
     </div>
   )

@@ -117,6 +117,31 @@ export async function getMoviesByGenre(genreId: number, page: number = 1): Promi
   return data.results;
 }
 
+// Get 2025-2026 movies (upcoming and released from 2025 to early 2026)
+export async function get2025Movies(page: number = 1): Promise<TMDBMovie[]> {
+  try {
+    const data = await tmdbFetch(`/discover/movie?primary_release_date.gte=2025-01-01&primary_release_date.lte=2026-06-30&page=${page}&region=US&sort_by=popularity.desc`);
+    return data.results;
+  } catch (error) {
+    console.warn('TMDB API unavailable, using fallback 2025 movies');
+    return FALLBACK_2025_MOVIES;
+  }
+}
+
+// Get seasonal movies for fall/autumn (horror, thriller, drama genres) from 2025-2026
+export async function getSeasonalMovies(page: number = 1): Promise<TMDBMovie[]> {
+  try {
+    // Fall/autumn appropriate genres: Horror (27), Thriller (53), Drama (18), Mystery (9648)
+    const fallGenres = [27, 53, 18, 9648];
+    const genreIds = fallGenres.join(',');
+    const data = await tmdbFetch(`/discover/movie?primary_release_date.gte=2025-01-01&primary_release_date.lte=2026-06-30&with_genres=${genreIds}&page=${page}&region=US&sort_by=popularity.desc`);
+    return data.results;
+  } catch (error) {
+    console.warn('TMDB API unavailable, using fallback seasonal movies');
+    return FALLBACK_SEASONAL_MOVIES;
+  }
+}
+
 // Get movie genres
 export async function getGenres(): Promise<{ id: number; name: string }[]> {
   const data = await tmdbFetch('/genre/movie/list');
@@ -181,6 +206,86 @@ const FALLBACK_TRENDING_MOVIES: TMDBMovie[] = [
     vote_average: 6.9,
     vote_count: 634,
     popularity: 1876.234
+  }
+];
+
+// Fallback 2025-2026 movies data (using real TMDB poster paths)
+const FALLBACK_2025_MOVIES: TMDBMovie[] = [
+  {
+    id: 900001,
+    title: "Avatar: Fire and Ash",
+    overview: "The third installment in the Avatar saga continues Jake Sully's journey on Pandora as new threats emerge from the volcanic regions.",
+    release_date: "2025-12-19",
+    poster_path: "/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg", // Real Avatar poster path
+    backdrop_path: "/p1F51Lvj3sMopG948F5LgKoTwv9.jpg",
+    genre_ids: [878, 12, 28],
+    vote_average: 8.2,
+    vote_count: 2500,
+    popularity: 4500.0
+  },
+  {
+    id: 900002,
+    title: "Fantastic Four: First Steps", 
+    overview: "Marvel's First Family finally joins the MCU in this cosmic adventure that will change everything.",
+    release_date: "2025-05-02",
+    poster_path: "/cdqLnri3NEGcmfnqwk2TSIYtddg.jpg", // Real Marvel poster
+    backdrop_path: "/tElnmtQ6yz1PjN1kePNl8yMSb59.jpg",
+    genre_ids: [28, 12, 878],
+    vote_average: 7.8,
+    vote_count: 1800,
+    popularity: 3800.0
+  },
+  {
+    id: 900004,
+    title: "The Batman Part II",
+    overview: "The Dark Knight continues his war on crime in Gotham City in this highly anticipated sequel.",
+    release_date: "2025-10-03",
+    poster_path: "/74xTEgt7R36Fpooo50r9T25onhq.jpg", // Real Batman poster
+    backdrop_path: "/b0PlHarCwXd2FvSfhRmAbssSqgD.jpg",
+    genre_ids: [28, 80, 18],
+    vote_average: 8.5,
+    vote_count: 3200,
+    popularity: 5200.0
+  }
+];
+
+// Fallback seasonal movies data (fall appropriate genres with real posters)
+const FALLBACK_SEASONAL_MOVIES: TMDBMovie[] = [
+  {
+    id: 900003,
+    title: "Terrifier 3",
+    overview: "Art the Clown returns for another night of terror in this spine-chilling horror sequel.",
+    release_date: "2025-10-31",
+    poster_path: "/63xYQj1BwRFielxsBDXvHIJyXVm.jpg", // Real Terrifier poster
+    backdrop_path: "/18TSJF1WLA4CkymvVUcKDBwUJ9F.jpg",
+    genre_ids: [27, 53],
+    vote_average: 6.9,
+    vote_count: 1200,
+    popularity: 2200.0
+  },
+  {
+    id: 900005,
+    title: "A Quiet Place: Day One",
+    overview: "Experience the terrifying origins of the alien invasion in this prequel to the acclaimed horror franchise.",
+    release_date: "2025-09-15",
+    poster_path: "/hU42CRk14JuPEdqZG3AWmagiPAP.jpg", // Real Quiet Place poster
+    backdrop_path: "/2RVcJbWFmICRDsVxRI8F5xRmRsK.jpg",
+    genre_ids: [27, 53, 18],
+    vote_average: 7.8,
+    vote_count: 2100,
+    popularity: 3100.0
+  },
+  {
+    id: 900006,
+    title: "Scream 7",
+    overview: "The Ghostface killer returns to terrorize a new generation in Woodsboro.",
+    release_date: "2025-11-22",
+    poster_path: "/wDWwtvkRRlgTiUr6TyLSMX8FCuZ.jpg", // Real Scream poster
+    backdrop_path: "/yOm993lsJyPmBodlYjgpPwMfUC.jpg",
+    genre_ids: [27, 53, 9648],
+    vote_average: 7.2,
+    vote_count: 1800,
+    popularity: 2800.0
   }
 ];
 
