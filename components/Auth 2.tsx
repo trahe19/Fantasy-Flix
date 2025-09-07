@@ -5,11 +5,10 @@ import { login, register, User } from '../lib/auth'
 
 interface AuthProps {
   onLogin: (user: User) => void
-  defaultMode?: 'login' | 'signup'
 }
 
-const Auth = ({ onLogin, defaultMode = 'login' }: AuthProps) => {
-  const [isLogin, setIsLogin] = useState(defaultMode === 'login')
+const Auth = ({ onLogin }: AuthProps) => {
+  const [isLogin, setIsLogin] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [formData, setFormData] = useState({
@@ -36,13 +35,12 @@ const Auth = ({ onLogin, defaultMode = 'login' }: AuthProps) => {
         const user = await register({
           username: formData.username,
           email: formData.email,
-          displayName: formData.displayName,
-          password: formData.password
+          displayName: formData.displayName
         })
         onLogin(user)
       }
-    } catch (err: any) {
-      setError(err.message || 'Authentication failed. Please try again.')
+    } catch (err) {
+      setError('Authentication failed. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -58,15 +56,9 @@ const Auth = ({ onLogin, defaultMode = 'login' }: AuthProps) => {
   // Quick login for demo
   const handleQuickLogin = async () => {
     setIsLoading(true)
-    try {
-      const user = await login('demo@fantasyflix.com', 'demo123')
-      if (user) {
-        onLogin(user)
-      } else {
-        setError('Demo login failed. Please try creating a new account.')
-      }
-    } catch (err: any) {
-      setError('Demo login failed. Please try creating a new account.')
+    const user = await login('grant.geyer@icloud.com', 'demo123')
+    if (user) {
+      onLogin(user)
     }
     setIsLoading(false)
   }

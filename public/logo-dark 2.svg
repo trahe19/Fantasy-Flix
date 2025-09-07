@@ -1,0 +1,51 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Theater curtain background -->
+  <defs>
+    <radialGradient id="spotlight" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFA500" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#8B0000" stop-opacity="0.8"/>
+    </radialGradient>
+    <linearGradient id="popcornGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFD700"/>
+      <stop offset="50%" stop-color="#FFA500"/>
+      <stop offset="100%" stop-color="#FF8C00"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="90" fill="url(#spotlight)"/>
+  
+  <!-- Popcorn container -->
+  <path d="M65 85 L135 85 L130 140 L70 140 Z" fill="#DC143C" stroke="#8B0000" stroke-width="3"/>
+  <path d="M65 85 L135 85 L130 140 L70 140 Z" fill="url(#gradient)" opacity="0.3"/>
+  
+  <!-- White stripes -->
+  <rect x="75" y="85" width="8" height="55" fill="#F5F5DC"/>
+  <rect x="95" y="85" width="8" height="55" fill="#F5F5DC"/>
+  <rect x="115" y="85" width="8" height="55" fill="#F5F5DC"/>
+  
+  <!-- Popcorn kernels -->
+  <circle cx="85" cy="75" r="6" fill="url(#popcornGrad)"/>
+  <circle cx="100" cy="70" r="7" fill="url(#popcornGrad)"/>
+  <circle cx="115" cy="75" r="6" fill="url(#popcornGrad)"/>
+  <circle cx="90" cy="65" r="5" fill="url(#popcornGrad)"/>
+  <circle cx="110" cy="68" r="6" fill="url(#popcornGrad)"/>
+  <circle cx="95" cy="58" r="4" fill="url(#popcornGrad)"/>
+  <circle cx="105" cy="60" r="5" fill="url(#popcornGrad)"/>
+  
+  <!-- Evil eyes -->
+  <ellipse cx="85" cy="105" rx="6" ry="8" fill="#000"/>
+  <ellipse cx="115" cy="105" rx="6" ry="8" fill="#000"/>
+  <circle cx="85" cy="103" r="2" fill="#FFF"/>
+  <circle cx="115" cy="103" r="2" fill="#FFF"/>
+  
+  <!-- Evil grin -->
+  <path d="M90 120 Q100 130 110 120" stroke="#000" stroke-width="3" fill="none"/>
+  
+  <!-- Film strip coming out -->
+  <rect x="105" y="125" width="25" height="8" fill="#000" rx="2"/>
+  <rect x="108" y="126.5" width="2" height="5" fill="#FFF"/>
+  <rect x="113" y="126.5" width="2" height="5" fill="#FFF"/>
+  <rect x="118" y="126.5" width="2" height="5" fill="#FFF"/>
+  <rect x="123" y="126.5" width="2" height="5" fill="#FFF"/>
+</svg>

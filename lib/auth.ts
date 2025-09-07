@@ -1,11 +1,18 @@
-// Simple authentication system for Fantasy Flix
+import { supabase } from './supabase'
+import type { User as SupabaseUser } from '@supabase/supabase-js'
+
+// Fantasy Flix User interface matching our database schema
 export interface User {
   id: string;
   username: string;
   email: string;
-  displayName: string;
-  joinDate: string;
-  leagues: string[];
+  display_name: string;
+  avatar_url?: string;
+  total_earnings?: number;
+  total_leagues?: number;
+  championships?: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface League {
@@ -47,168 +54,134 @@ export interface MoviePick {
   weeklyScores: { week: number; score: number; boxOffice?: number }[];
 }
 
-// Mock user storage (in a real app, this would be a database)
-let users: User[] = [
-  {
-    id: 'user1',
-    username: 'grantgeyer',
-    email: 'grant.geyer@icloud.com',
-    displayName: 'Grant Geyer',
-    joinDate: '2024-01-15',
-    leagues: ['league1']
-  }
-];
+// Authentication functions using Supabase
+export async function login(email: string, password: string): Promise<User | null> {
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
 
-let leagues: League[] = [];
+    if (error) {
+      console.error('Login error:', error.message)
+      return null
+    }
 
-let currentUser: User | null = null;
+    if (data.user) {
+      // Get user profile from our users table
+      const { data: profile, error: profileError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', data.user.email)
+        .single()
 
-// Authentication functions
-export function login(email: string, password: string): Promise<User | null> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const user = users.find(u => u.email === email);
-      if (user) {
-        currentUser = user;
-        localStorage.setItem('fantasy-flix-user', JSON.stringify(user));
-        resolve(user);
-      } else {
-        resolve(null);
+      if (profile && !profileError) {
+        return profile
       }
-    }, 500); // Simulate network delay
-  });
-}
+    }
 
-export function register(userData: Omit<User, 'id' | 'joinDate' | 'leagues'>): Promise<User> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const newUser: User = {
-        ...userData,
-        id: `user${users.length + 1}`,
-        joinDate: new Date().toISOString().split('T')[0],
-        leagues: []
-      };
-      users.push(newUser);
-      currentUser = newUser;
-      localStorage.setItem('fantasy-flix-user', JSON.stringify(newUser));
-      resolve(newUser);
-    }, 500);
-  });
-}
-
-export function logout(): void {
-  currentUser = null;
-  localStorage.removeItem('fantasy-flix-user');
-}
-
-export function getCurrentUser(): User | null {
-  if (currentUser) return currentUser;
-  
-  // Check localStorage
-  const stored = localStorage.getItem('fantasy-flix-user');
-  if (stored) {
-    currentUser = JSON.parse(stored);
-    return currentUser;
+    return null
+  } catch (error) {
+    console.error('Login error:', error)
+    return null
   }
-  
-  return null;
 }
 
-export function isLoggedIn(): boolean {
-  return getCurrentUser() !== null;
-}
+export async function register(userData: { 
+  username: string; 
+  email: string; 
+  displayName: string;
+  password: string;
+}): Promise<User> {
+  try {
+    // First, create auth user
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: userData.email,
+      password: userData.password,
+    })
 
-// League management functions
-export function createLeague(leagueData: Omit<League, 'id' | 'players'>): League {
-  const newLeague: League = {
-    ...leagueData,
-    id: `league${leagues.length + 1}`,
-    players: []
-  };
-  
-  leagues.push(newLeague);
-  
-  // Add league to current user
-  if (currentUser) {
-    currentUser.leagues.push(newLeague.id);
-    // Update stored user
-    localStorage.setItem('fantasy-flix-user', JSON.stringify(currentUser));
-  }
-  
-  return newLeague;
-}
+    if (authError) {
+      throw new Error(authError.message)
+    }
 
-export function getLeagues(): League[] {
-  return leagues;
-}
+    if (authData.user) {
+      // Create user profile in our users table
+      const { data: profile, error: profileError } = await supabase
+        .from('users')
+        .insert([{
+          email: userData.email,
+          username: userData.username,
+          display_name: userData.displayName,
+          total_earnings: 0,
+          total_leagues: 0,
+          championships: 0
+        }])
+        .select()
+        .single()
 
-export function getUserLeagues(userId: string): League[] {
-  return leagues.filter(league => 
-    league.createdBy === userId || 
-    league.players.some(player => player.userId === userId)
-  );
-}
-
-export function getLeague(leagueId: string): League | null {
-  return leagues.find(league => league.id === leagueId) || null;
-}
-
-export function joinLeague(leagueId: string, userId: string): boolean {
-  const league = getLeague(leagueId);
-  const user = users.find(u => u.id === userId);
-  
-  if (!league || !user || league.players.length >= league.maxPlayers) {
-    return false;
-  }
-  
-  // Check if user already in league
-  if (league.players.some(player => player.userId === userId)) {
-    return false;
-  }
-  
-  // Add player to league
-  league.players.push({
-    userId,
-    username: user.username,
-    joinDate: new Date().toISOString().split('T')[0],
-    roster: [],
-    totalScore: 0,
-    rank: league.players.length + 1,
-    weeklyScores: []
-  });
-  
-  league.currentPlayers = league.players.length;
-  
-  // Add league to user
-  if (!user.leagues.includes(leagueId)) {
-    user.leagues.push(leagueId);
-  }
-  
-  return true;
-}
-
-// Mock data for testing
-export function initializeMockData(): void {
-  // Only initialize if no leagues exist
-  if (leagues.length === 0) {
-    const mockLeague = createLeague({
-      name: 'Friends League 2025',
-      createdBy: 'user1',
-      season: '2025-Fall',
-      status: 'active',
-      maxPlayers: 10,
-      currentPlayers: 4,
-      entryFee: 25,
-      prizePool: 250,
-      draftDate: '2025-09-01',
-      rules: {
-        budget: 1000,
-        positions: ['Blockbuster', 'Indie', 'Action', 'Drama', 'Horror'],
-        scoringPeriod: 'weekend'
+      if (profileError) {
+        throw new Error(profileError.message)
       }
-    });
+
+      return profile
+    }
+
+    throw new Error('Failed to create user')
+  } catch (error) {
+    console.error('Registration error:', error)
+    throw error
+  }
+}
+
+export async function logout(): Promise<void> {
+  const { error } = await supabase.auth.signOut()
+  if (error) {
+    console.error('Logout error:', error.message)
+    throw error
+  }
+}
+
+export async function getCurrentUser(): Promise<User | null> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
     
-    // Add some mock players
-    joinLeague(mockLeague.id, 'user1');
+    if (user) {
+      // Get user profile from our users table
+      const { data: profile, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', user.email)
+        .single()
+
+      if (profile && !error) {
+        return profile
+      }
+    }
+
+    return null
+  } catch (error) {
+    console.error('Get current user error:', error)
+    return null
   }
 }
+
+export async function isLoggedIn(): Promise<boolean> {
+  const { data: { user } } = await supabase.auth.getUser()
+  return !!user
+}
+
+// Session management
+export function onAuthStateChange(callback: (user: User | null) => void) {
+  return supabase.auth.onAuthStateChange(async (event, session) => {
+    console.log('Auth state changed:', event, session?.user?.email)
+    if (session?.user) {
+      const user = await getCurrentUser()
+      callback(user)
+    } else {
+      callback(null)
+    }
+  })
+}
+
+// Additional helper functions can be added here for Supabase integration
+// League management will be handled through the database operations in supabase.ts

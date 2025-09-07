@@ -1,5 +1,6 @@
 import './globals.css'
 import { Poppins, JetBrains_Mono } from 'next/font/google'
+import { AuthProvider } from '../contexts/AuthContext'
 
 const poppins = Poppins({ 
   subsets: ['latin'],
@@ -29,7 +30,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable} ${jetbrainsMono.variable} font-sans`}>{children}</body>
+      <body className={`${poppins.variable} ${jetbrainsMono.variable} font-sans`}>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      </body>
     </html>
   )
 }
