@@ -22,8 +22,12 @@ const LandingPage = ({ onLogin }: LandingPageProps) => {
     onLogin(user)
   }
 
+  const handleAuthBack = () => {
+    setShowAuth(false)
+  }
+
   if (showAuth) {
-    return <Auth onLogin={handleAuthSuccess} defaultMode={authMode} />
+    return <Auth onLogin={handleAuthSuccess} onBack={handleAuthBack} defaultMode={authMode} />
   }
 
   return (

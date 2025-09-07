@@ -5,10 +5,11 @@ import { login, register, User } from '../lib/auth'
 
 interface AuthProps {
   onLogin: (user: User) => void
+  onBack?: () => void
   defaultMode?: 'login' | 'signup'
 }
 
-const Auth = ({ onLogin, defaultMode = 'login' }: AuthProps) => {
+const Auth = ({ onLogin, onBack, defaultMode = 'login' }: AuthProps) => {
   const [isLogin, setIsLogin] = useState(defaultMode === 'login')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -87,7 +88,19 @@ const Auth = ({ onLogin, defaultMode = 'login' }: AuthProps) => {
       <div className="absolute top-40 right-40 w-72 h-72 bg-indigo-700 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-float" style={{ animationDelay: '4s' }} />
       
       <div className="w-full max-w-md mx-auto relative z-10">
-        <div className="text-center mb-8">
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="absolute top-0 left-0 text-gray-300 hover:text-white transition-colors flex items-center space-x-2 group"
+          >
+            <svg className="w-5 h-5 group-hover:transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            <span className="text-sm">Back to Home</span>
+          </button>
+        )}
+        
+        <div className="text-center mb-8 mt-12">
           <div className="inline-block animate-glow rounded-full p-1 mb-6">
             <span className="text-6xl">🎬</span>
           </div>
