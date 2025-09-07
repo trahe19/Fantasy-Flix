@@ -12,6 +12,7 @@ const Auth = ({ onLogin, defaultMode = 'login' }: AuthProps) => {
   const [isLogin, setIsLogin] = useState(defaultMode === 'login')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -23,6 +24,7 @@ const Auth = ({ onLogin, defaultMode = 'login' }: AuthProps) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
+    setSuccessMessage('')
 
     try {
       if (isLogin) {
@@ -33,13 +35,19 @@ const Auth = ({ onLogin, defaultMode = 'login' }: AuthProps) => {
           setError('Invalid email or password')
         }
       } else {
-        const user = await register({
+        const result = await register({
           username: formData.username,
           email: formData.email,
           displayName: formData.displayName,
           password: formData.password
         })
-        onLogin(user)
+        
+        if (result.needsConfirmation) {
+          setSuccessMessage(`Please check your email (${formData.email}) for a confirmation link to activate your account.`)
+          setFormData({ email: '', password: '', username: '', displayName: '' })
+        } else if (result.user) {
+          onLogin(result.user)
+        }
       }
     } catch (err: any) {
       setError(err.message || 'Authentication failed. Please try again.')
@@ -97,12 +105,27 @@ const Auth = ({ onLogin, defaultMode = 'login' }: AuthProps) => {
               {error}
             </div>
           )}
+          
+          {successMessage && (
+            <div className="bg-green-500 bg-opacity-20 border border-green-500 text-green-300 rounded-xl p-4 mb-6">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <p className="font-medium">Account Created Successfully!</p>
+                  <p className="text-sm mt-1">{successMessage}</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="flex mb-6">
             <button
               onClick={() => {
                 setIsLogin(true)
                 setError('')
+                setSuccessMessage('')
               }}
               className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
                 isLogin
@@ -116,6 +139,7 @@ const Auth = ({ onLogin, defaultMode = 'login' }: AuthProps) => {
               onClick={() => {
                 setIsLogin(false)
                 setError('')
+                setSuccessMessage('')
               }}
               className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
                 !isLogin
@@ -232,20 +256,23 @@ const Auth = ({ onLogin, defaultMode = 'login' }: AuthProps) => {
             </div>
           )}
 
-          <div className="mt-6 text-center">
-            <p className="text-xs text-gray-400">
-              {isLogin ? "Don't have an account?" : "Already have an account?"}
-              <button
-                onClick={() => {
-                  setIsLogin(!isLogin)
-                  setError('')
-                }}
-                className="text-blue-400 hover:text-blue-300 ml-1"
-              >
-                {isLogin ? 'Sign up' : 'Sign in'}
-              </button>
-            </p>
-          </div>
+          {!successMessage && (
+            <div className="mt-6 text-center">
+              <p className="text-xs text-gray-400">
+                {isLogin ? "Don't have an account?" : "Already have an account?"}
+                <button
+                  onClick={() => {
+                    setIsLogin(!isLogin)
+                    setError('')
+                    setSuccessMessage('')
+                  }}
+                  className="text-blue-400 hover:text-blue-300 ml-1"
+                >
+                  {isLogin ? 'Sign up' : 'Sign in'}
+                </button>
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

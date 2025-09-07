@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { League, createLeague, getUserLeagues, getCurrentUser } from '../lib/auth'
+import { getCurrentUser } from '../lib/auth'
+import { League, db } from '../lib/supabase'
+import { realLeagueData } from '../lib/realLeagueData'
 
 const LeagueManager = () => {
   const [leagues, setLeagues] = useState<League[]>([])
@@ -19,43 +21,47 @@ const LeagueManager = () => {
 
   useEffect(() => {
     if (currentUser) {
-      const userLeagues = getUserLeagues(currentUser.id)
-      setLeagues(userLeagues)
+      // Use mock data for now - replace with real DB query later
+      setLeagues(realLeagueData as any)
     }
   }, [currentUser])
 
-  const handleCreateLeague = () => {
+  const handleCreateLeague = async () => {
     if (!currentUser) return
 
-    const newLeague = createLeague({
-      name: formData.name,
-      createdBy: currentUser.id,
-      season: formData.season,
-      status: 'draft',
-      maxPlayers: formData.maxPlayers,
-      currentPlayers: 0,
-      entryFee: formData.entryFee,
-      prizePool: formData.entryFee * formData.maxPlayers,
-      rules: {
-        budget: formData.budget,
-        positions: formData.positions,
-        scoringPeriod: formData.scoringPeriod
+    try {
+      // Create league using Supabase - for now just mock it
+      const newLeague = {
+        id: Math.random().toString(36).substr(2, 9),
+        name: formData.name,
+        creator_id: currentUser.id,
+        season_start: '2025-01-01',
+        season_end: '2025-12-31',
+        status: 'draft' as const,
+        max_players: formData.maxPlayers,
+        entry_fee: formData.entryFee,
+        prize_pool: formData.entryFee * formData.maxPlayers,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
-    })
 
-    setLeagues([...leagues, newLeague])
-    setShowCreateModal(false)
-    
-    // Reset form
-    setFormData({
-      name: '',
-      season: '2025-Fall',
-      maxPlayers: 10,
-      entryFee: 0,
-      budget: 1000,
-      positions: ['Blockbuster', 'Indie', 'Action', 'Drama', 'Horror'],
-      scoringPeriod: 'weekend'
-    })
+      // TODO: Use db.createLeague(newLeague) when implemented
+      setLeagues([...leagues, newLeague])
+      setShowCreateModal(false)
+      
+      // Reset form
+      setFormData({
+        name: '',
+        season: '2025-Fall',
+        maxPlayers: 10,
+        entryFee: 0,
+        budget: 1000,
+        positions: ['Blockbuster', 'Indie', 'Action', 'Drama', 'Horror'],
+        scoringPeriod: 'weekend'
+      })
+    } catch (error) {
+      console.error('Error creating league:', error)
+    }
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {

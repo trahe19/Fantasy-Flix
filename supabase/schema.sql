@@ -4,9 +4,9 @@
 -- Enable RLS (Row Level Security)
 ALTER DEFAULT PRIVILEGES REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
 
--- Users table
+-- Users table (linked to Supabase auth.users)
 CREATE TABLE IF NOT EXISTS users (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email VARCHAR UNIQUE NOT NULL,
   username VARCHAR UNIQUE NOT NULL,
   display_name VARCHAR NOT NULL,

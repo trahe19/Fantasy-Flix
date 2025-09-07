@@ -92,12 +92,18 @@ export async function register(userData: {
   email: string; 
   displayName: string;
   password: string;
-}): Promise<User> {
+}): Promise<{ user: User | null; needsConfirmation: boolean }> {
   try {
-    // First, create auth user
+    // First, create auth user with email confirmation
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: userData.email,
       password: userData.password,
+      options: {
+        data: {
+          username: userData.username,
+          display_name: userData.displayName,
+        }
+      }
     })
 
     if (authError) {
@@ -105,25 +111,49 @@ export async function register(userData: {
     }
 
     if (authData.user) {
-      // Create user profile in our users table
-      const { data: profile, error: profileError } = await supabase
-        .from('users')
-        .insert([{
-          email: userData.email,
-          username: userData.username,
-          display_name: userData.displayName,
-          total_earnings: 0,
-          total_leagues: 0,
-          championships: 0
-        }])
-        .select()
-        .single()
+      // If email confirmation is required, user won't be automatically confirmed
+      if (!authData.user.email_confirmed_at) {
+        // Create user profile in our users table (will be activated after confirmation)
+        const { error: profileError } = await supabase
+          .from('users')
+          .insert([{
+            id: authData.user.id,
+            email: userData.email,
+            username: userData.username,
+            display_name: userData.displayName,
+            total_earnings: 0,
+            total_leagues: 0,
+            championships: 0
+          }])
 
-      if (profileError) {
-        throw new Error(profileError.message)
+        if (profileError) {
+          console.error('Profile creation error:', profileError)
+          // Don't throw here as the auth user was created successfully
+        }
+
+        return { user: null, needsConfirmation: true }
+      } else {
+        // User is confirmed, create/get profile
+        const { data: profile, error: profileError } = await supabase
+          .from('users')
+          .upsert([{
+            id: authData.user.id,
+            email: userData.email,
+            username: userData.username,
+            display_name: userData.displayName,
+            total_earnings: 0,
+            total_leagues: 0,
+            championships: 0
+          }])
+          .select()
+          .single()
+
+        if (profileError) {
+          throw new Error(profileError.message)
+        }
+
+        return { user: profile, needsConfirmation: false }
       }
-
-      return profile
     }
 
     throw new Error('Failed to create user')
@@ -174,13 +204,62 @@ export async function isLoggedIn(): Promise<boolean> {
 export function onAuthStateChange(callback: (user: User | null) => void) {
   return supabase.auth.onAuthStateChange(async (event, session) => {
     console.log('Auth state changed:', event, session?.user?.email)
-    if (session?.user) {
+    
+    if (event === 'SIGNED_IN' && session?.user) {
+      // Handle email confirmation
+      if (session.user.email_confirmed_at) {
+        // User just confirmed their email, create/update their profile
+        const { error: profileError } = await supabase
+          .from('users')
+          .upsert([{
+            id: session.user.id,
+            email: session.user.email!,
+            username: session.user.user_metadata?.username || session.user.email!.split('@')[0],
+            display_name: session.user.user_metadata?.display_name || session.user.user_metadata?.username || 'User',
+            total_earnings: 0,
+            total_leagues: 0,
+            championships: 0
+          }])
+
+        if (profileError) {
+          console.error('Profile upsert error:', profileError)
+        }
+      }
+      
       const user = await getCurrentUser()
       callback(user)
-    } else {
+    } else if (event === 'SIGNED_OUT') {
       callback(null)
     }
   })
+}
+
+// Handle email confirmation
+export async function handleEmailConfirmation(): Promise<void> {
+  const { data, error } = await supabase.auth.getSession()
+  if (error) {
+    console.error('Session error:', error)
+    return
+  }
+  
+  if (data.session?.user?.email_confirmed_at) {
+    // User is confirmed, ensure profile exists
+    const { error: profileError } = await supabase
+      .from('users')
+      .upsert([{
+        id: data.session.user.id,
+        email: data.session.user.email!,
+        username: data.session.user.user_metadata?.username || data.session.user.email!.split('@')[0],
+        display_name: data.session.user.user_metadata?.display_name || data.session.user.user_metadata?.username || 'User',
+        total_earnings: 0,
+        total_leagues: 0,
+        championships: 0
+      }])
+
+    if (profileError) {
+      console.error('Profile creation error:', profileError)
+    }
+  }
 }
 
 // Additional helper functions can be added here for Supabase integration

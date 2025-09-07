@@ -7,7 +7,8 @@ import TabbedChart from './TabbedChart'
 import ActivityFeed, { generateMockActivity } from './ActivityFeed'
 import MovieDetailModal from './MovieDetailModal'
 import { getSeasonalMovies, get2025Movies, getImageUrl, formatCurrency, TMDBMovie } from '../lib/tmdb'
-import { getUserLeagues, getCurrentUser } from '../lib/auth'
+import { getCurrentUser } from '../lib/auth'
+import { db } from '../lib/supabase'
 import { realLeagueData, getLeagueStandings, generateRealChartData } from '../lib/realLeagueData'
 
 const Dashboard = memo(function Dashboard() {
@@ -56,7 +57,7 @@ const Dashboard = memo(function Dashboard() {
   // Load user leagues
   useEffect(() => {
     if (currentUser) {
-      const leagues = getUserLeagues(currentUser.id)
+      const leagues = realLeagueData // Use mock data for now
       setUserLeagues(leagues)
     }
   }, [currentUser])
