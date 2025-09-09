@@ -25,8 +25,11 @@ const PerformanceChart = ({
   color = '#3b82f6' 
 }: PerformanceChartProps) => {
   const formatValue = (value: number) => {
-    if (dataKey === 'boxOffice') {
-      return `$${(value / 1000000).toFixed(1)}M`
+    if (dataKey === 'boxOffice' || dataKey === 'score') {
+      if (value >= 1000000000) {
+        return `$${(value / 1000000000).toFixed(1)}B`
+      }
+      return `$${Math.round(value / 1000000)}M`
     }
     if (dataKey === 'rank') {
       return `#${value}`
@@ -49,88 +52,83 @@ const PerformanceChart = ({
   }
 
   return (
-    <div className="glass-elegant rounded-2xl p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-white">{title}</h3>
-        <div className="flex items-center space-x-2">
-          <div 
-            className="w-3 h-3 rounded-full" 
-            style={{ backgroundColor: color }}
-          ></div>
-          <span className="text-gray-400 text-sm capitalize">{dataKey}</span>
-        </div>
-      </div>
-      
-      <div className="h-64">
-        <ResponsiveContainer width="100%" height="100%">
-          {type === 'area' ? (
-            <AreaChart data={data}>
-              <defs>
-                <linearGradient id={`gradient-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={color} stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor={color} stopOpacity={0.05}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis 
-                dataKey="week" 
-                stroke="#9ca3af"
-                fontSize={12}
-                tickFormatter={(value) => `W${value}`}
-              />
-              <YAxis 
-                stroke="#9ca3af"
-                fontSize={12}
-                tickFormatter={formatValue}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Area
-                type="monotone"
-                dataKey={dataKey}
-                stroke={color}
-                fillOpacity={1}
-                fill={`url(#gradient-${dataKey})`}
-                strokeWidth={2}
-              />
-            </AreaChart>
-          ) : (
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis 
-                dataKey="week" 
-                stroke="#9ca3af"
-                fontSize={12}
-                tickFormatter={(value) => `W${value}`}
-              />
-              <YAxis 
-                stroke="#9ca3af"
-                fontSize={12}
-                tickFormatter={formatValue}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Line 
-                type="monotone" 
-                dataKey={dataKey} 
-                stroke={color} 
-                strokeWidth={3}
-                dot={{ fill: color, strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, stroke: color, strokeWidth: 2, fill: '#1f2937' }}
-              />
-            </LineChart>
-          )}
-        </ResponsiveContainer>
-      </div>
-      
-      {data.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-gray-600">
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-400">Current: </span>
-            <span className="text-white font-bold">
-              {formatValue(data[data.length - 1][dataKey])}
-            </span>
+    <div className="w-full h-full">
+      {title && (
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-bold text-white">{title}</h3>
+          <div className="flex items-center space-x-2">
+            <div 
+              className="w-3 h-3 rounded-full" 
+              style={{ backgroundColor: color }}
+            ></div>
+            <span className="text-gray-400 text-sm capitalize">{dataKey}</span>
           </div>
         </div>
       )}
+      
+      <ResponsiveContainer width="100%" height={224}>
+        {type === 'area' ? (
+          <AreaChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+            <defs>
+              <linearGradient id={`gradient-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={color} stopOpacity={0.3}/>
+                <stop offset="95%" stopColor={color} stopOpacity={0.05}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <XAxis 
+              dataKey="week" 
+              stroke="#9ca3af"
+              fontSize={12}
+              tickFormatter={(value) => value.toString()}
+              interval={data.length <= 12 ? 0 : data.length <= 26 ? 1 : data.length <= 52 ? 3 : 7}
+            />
+            <YAxis 
+              stroke="#9ca3af"
+              fontSize={12}
+              tickFormatter={formatValue}
+              domain={(dataKey === 'boxOffice' || dataKey === 'score') ? [0, 1000000000] : undefined}
+              tickCount={(dataKey === 'boxOffice' || dataKey === 'score') ? 21 : undefined}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Area
+              type="monotone"
+              dataKey={dataKey}
+              stroke={color}
+              fillOpacity={1}
+              fill={`url(#gradient-${dataKey})`}
+              strokeWidth={2}
+            />
+          </AreaChart>
+        ) : (
+          <LineChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <XAxis 
+              dataKey="week" 
+              stroke="#9ca3af"
+              fontSize={12}
+              tickFormatter={(value) => value.toString()}
+              interval={data.length <= 12 ? 0 : data.length <= 26 ? 1 : data.length <= 52 ? 3 : 7}
+            />
+            <YAxis 
+              stroke="#9ca3af"
+              fontSize={12}
+              tickFormatter={formatValue}
+              domain={(dataKey === 'boxOffice' || dataKey === 'score') ? [0, 1000000000] : undefined}
+              tickCount={(dataKey === 'boxOffice' || dataKey === 'score') ? 21 : undefined}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Line 
+              type="monotone" 
+              dataKey={dataKey} 
+              stroke={color} 
+              strokeWidth={3}
+              dot={{ fill: color, strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6, stroke: color, strokeWidth: 2, fill: '#1f2937' }}
+            />
+          </LineChart>
+        )}
+      </ResponsiveContainer>
     </div>
   )
 }

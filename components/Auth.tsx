@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { login, register, User } from '../lib/auth'
+import { testSupabaseConnection } from '../lib/supabase-test'
 
 interface AuthProps {
   onLogin: (user: User) => void
@@ -20,6 +21,11 @@ const Auth = ({ onLogin, onBack, defaultMode = 'login' }: AuthProps) => {
     username: '',
     displayName: ''
   })
+
+  // Test Supabase connection on component mount
+  useEffect(() => {
+    testSupabaseConnection()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

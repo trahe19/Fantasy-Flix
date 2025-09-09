@@ -82,6 +82,34 @@ export async function getUpcomingMovies(page: number = 1): Promise<TMDBMovie[]> 
   return data.results;
 }
 
+// Get biggest upcoming movies in the next 30 days (most anticipated)
+export async function getBiggestUpcomingMovies(page: number = 1): Promise<TMDBMovie[]> {
+  try {
+    const today = new Date();
+    const next90Days = new Date(); // Extended to 90 days to catch more movies
+    next90Days.setDate(today.getDate() + 90);
+    
+    const todayStr = today.toISOString().split('T')[0];
+    const next90DaysStr = next90Days.toISOString().split('T')[0];
+    
+    console.log('Fetching upcoming movies from', todayStr, 'to', next90DaysStr);
+    
+    const data = await tmdbFetch(`/discover/movie?primary_release_date.gte=${todayStr}&primary_release_date.lte=${next90DaysStr}&page=${page}&region=US&sort_by=popularity.desc&vote_count.gte=5`);
+    
+    console.log('TMDB upcoming movies response:', data);
+    
+    if (data.results && data.results.length > 0) {
+      return data.results.slice(0, 6); // Top 6 most anticipated
+    } else {
+      console.log('No upcoming movies found, using fallback');
+      return FALLBACK_BIGGEST_UPCOMING_MOVIES;
+    }
+  } catch (error) {
+    console.warn('TMDB API error, using fallback upcoming movies:', error);
+    return FALLBACK_BIGGEST_UPCOMING_MOVIES;
+  }
+}
+
 // Get now playing movies (for current scoring)
 export async function getNowPlayingMovies(page: number = 1): Promise<TMDBMovie[]> {
   try {
@@ -286,6 +314,82 @@ const FALLBACK_SEASONAL_MOVIES: TMDBMovie[] = [
     vote_average: 7.2,
     vote_count: 1800,
     popularity: 2800.0
+  }
+];
+
+// Fallback biggest upcoming movies data (next 30 days)
+const FALLBACK_BIGGEST_UPCOMING_MOVIES: TMDBMovie[] = [
+  {
+    id: 558449,
+    title: "Gladiator II",
+    overview: "Years after witnessing the death of the revered hero Maximus at the hands of his uncle, Lucius is forced to enter the Colosseum after his home is conquered by the tyrannical Emperors who now lead Rome with an iron fist.",
+    release_date: "2024-11-13",
+    poster_path: "/2cxhvwyEwRlysAmRH4iodkvo0z5.jpg",
+    backdrop_path: "/euYIwmwkmz95mnXvufEmbL6ovhZ.jpg",
+    genre_ids: [28, 18, 36],
+    vote_average: 6.8,
+    vote_count: 1432,
+    popularity: 2543.876
+  },
+  {
+    id: 402431,
+    title: "Wicked",
+    overview: "Elphaba, an ostracized but defiant girl born with green skin, and Glinda, a privileged aristocrat born popular, become extremely unlikely friends in the magical Land of Oz.",
+    release_date: "2024-11-20",
+    poster_path: "/c5Tqxeo1UpBvnAc3csUm7j3hlQl.jpg",
+    backdrop_path: "/uKb22E0nlzr914bA9KyA5CVCOlV.jpg",
+    genre_ids: [18, 14, 10402],
+    vote_average: 8.6,
+    vote_count: 987,
+    popularity: 3456.789
+  },
+  {
+    id: 1241982,
+    title: "Moana 2",
+    overview: "After receiving an unexpected call from her wayfinding ancestors, Moana journeys alongside Maui and a new crew to the far seas of Oceania and into dangerous, long-lost waters for an adventure unlike anything she's ever faced.",
+    release_date: "2024-11-27",
+    poster_path: "/yh64qw9mgXBvlaWDi7Q9tpUBAvH.jpg",
+    backdrop_path: "/tElnmtQ6yz1PjN1kePNl8yMSb59.jpg",
+    genre_ids: [16, 12, 35, 10751],
+    vote_average: 7.0,
+    vote_count: 1876,
+    popularity: 4567.890
+  },
+  {
+    id: 762441,
+    title: "A Complete Unknown",
+    overview: "Set in the influential New York music scene of the early 60s, follow 19-year-old Minnesota musician Bob Dylan's meteoric rise as a folk singer to concert halls and the top of the charts.",
+    release_date: "2024-12-25",
+    poster_path: "/wfzjpy6giNKHbJfvpDCkhWgHrcd.jpg",
+    backdrop_path: "/4zlOPT9CrtIX05bBIkYxNZsm5zN.jpg",
+    genre_ids: [18, 10402],
+    vote_average: 7.2,
+    vote_count: 234,
+    popularity: 1234.567
+  },
+  {
+    id: 912649,
+    title: "Venom: The Last Dance",
+    overview: "Eddie and Venom are on the run. Hunted by both of their worlds and with the net closing in, the duo are forced into a devastating decision that will bring the curtains down on Venom and Eddie's last dance.",
+    release_date: "2024-10-22",
+    poster_path: "/aosm8NMQ3UyoBVpSxyimorCQykC.jpg",
+    backdrop_path: "/3V4kLQg0kSqPLctI5ziYWabAZYF.jpg",
+    genre_ids: [878, 53, 28],
+    vote_average: 6.8,
+    vote_count: 1205,
+    popularity: 3876.433
+  },
+  {
+    id: 845781,
+    title: "Red One",
+    overview: "After Santa Claus—Code Name: RED ONE—is kidnapped, the North Pole's Head of Security must team up with the world's most infamous tracker in a globe-trotting, action-packed mission to save Christmas.",
+    release_date: "2024-10-31",
+    poster_path: "/cdqLnri3NEGcmfnqwk2TSIYtddg.jpg",
+    backdrop_path: "/tElnmtQ6yz1PjN1kePNl8yMSb59.jpg",
+    genre_ids: [28, 35, 14],
+    vote_average: 6.9,
+    vote_count: 892,
+    popularity: 2234.567
   }
 ];
 

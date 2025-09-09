@@ -1,19 +1,16 @@
-import { supabase } from './supabase'
-import type { User as SupabaseUser } from '@supabase/supabase-js'
+// Simple local authentication - no external dependencies required
+import { 
+  User, 
+  login as localLogin, 
+  logout as localLogout, 
+  register as localRegister, 
+  getCurrentUser as getLocalCurrentUser, 
+  isLoggedIn as isLocalLoggedIn, 
+  onAuthStateChange as localOnAuthStateChange 
+} from './local-auth'
 
-// Fantasy Flix User interface matching our database schema
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  display_name: string;
-  avatar_url?: string;
-  total_earnings?: number;
-  total_leagues?: number;
-  championships?: number;
-  created_at: string;
-  updated_at: string;
-}
+// Re-export User interface
+export type { User }
 
 export interface League {
   id: string;
@@ -54,37 +51,9 @@ export interface MoviePick {
   weeklyScores: { week: number; score: number; boxOffice?: number }[];
 }
 
-// Authentication functions using Supabase
+// Simple local authentication functions
 export async function login(email: string, password: string): Promise<User | null> {
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-
-    if (error) {
-      console.error('Login error:', error.message)
-      return null
-    }
-
-    if (data.user) {
-      // Get user profile from our users table
-      const { data: profile, error: profileError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('email', data.user.email)
-        .single()
-
-      if (profile && !profileError) {
-        return profile
-      }
-    }
-
-    return null
-  } catch (error) {
-    console.error('Login error:', error)
-    return null
-  }
+  return localLogin(email, password)
 }
 
 export async function register(userData: { 
@@ -93,174 +62,130 @@ export async function register(userData: {
   displayName: string;
   password: string;
 }): Promise<{ user: User | null; needsConfirmation: boolean }> {
-  try {
-    // First, create auth user with email confirmation
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: userData.email,
-      password: userData.password,
-      options: {
-        data: {
-          username: userData.username,
-          display_name: userData.displayName,
-        }
-      }
-    })
-
-    if (authError) {
-      throw new Error(authError.message)
-    }
-
-    if (authData.user) {
-      // If email confirmation is required, user won't be automatically confirmed
-      if (!authData.user.email_confirmed_at) {
-        // Create user profile in our users table (will be activated after confirmation)
-        const { error: profileError } = await supabase
-          .from('users')
-          .insert([{
-            id: authData.user.id,
-            email: userData.email,
-            username: userData.username,
-            display_name: userData.displayName,
-            total_earnings: 0,
-            total_leagues: 0,
-            championships: 0
-          }])
-
-        if (profileError) {
-          console.error('Profile creation error:', profileError)
-          // Don't throw here as the auth user was created successfully
-        }
-
-        return { user: null, needsConfirmation: true }
-      } else {
-        // User is confirmed, create/get profile
-        const { data: profile, error: profileError } = await supabase
-          .from('users')
-          .upsert([{
-            id: authData.user.id,
-            email: userData.email,
-            username: userData.username,
-            display_name: userData.displayName,
-            total_earnings: 0,
-            total_leagues: 0,
-            championships: 0
-          }])
-          .select()
-          .single()
-
-        if (profileError) {
-          throw new Error(profileError.message)
-        }
-
-        return { user: profile, needsConfirmation: false }
-      }
-    }
-
-    throw new Error('Failed to create user')
-  } catch (error) {
-    console.error('Registration error:', error)
-    throw error
-  }
+  return localRegister(userData)
 }
 
 export async function logout(): Promise<void> {
-  const { error } = await supabase.auth.signOut()
-  if (error) {
-    console.error('Logout error:', error.message)
-    throw error
-  }
+  return localLogout()
 }
 
 export async function getCurrentUser(): Promise<User | null> {
-  try {
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (user) {
-      // Get user profile from our users table
-      const { data: profile, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('email', user.email)
-        .single()
-
-      if (profile && !error) {
-        return profile
-      }
-    }
-
-    return null
-  } catch (error) {
-    console.error('Get current user error:', error)
-    return null
-  }
+  return getLocalCurrentUser()
 }
 
 export async function isLoggedIn(): Promise<boolean> {
-  const { data: { user } } = await supabase.auth.getUser()
-  return !!user
+  return isLocalLoggedIn()
 }
 
 // Session management
 export function onAuthStateChange(callback: (user: User | null) => void) {
-  return supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log('Auth state changed:', event, session?.user?.email)
-    
-    if (event === 'SIGNED_IN' && session?.user) {
-      // Handle email confirmation
-      if (session.user.email_confirmed_at) {
-        // User just confirmed their email, create/update their profile
-        const { error: profileError } = await supabase
-          .from('users')
-          .upsert([{
-            id: session.user.id,
-            email: session.user.email!,
-            username: session.user.user_metadata?.username || session.user.email!.split('@')[0],
-            display_name: session.user.user_metadata?.display_name || session.user.user_metadata?.username || 'User',
-            total_earnings: 0,
-            total_leagues: 0,
-            championships: 0
-          }])
-
-        if (profileError) {
-          console.error('Profile upsert error:', profileError)
-        }
-      }
-      
-      const user = await getCurrentUser()
-      callback(user)
-    } else if (event === 'SIGNED_OUT') {
-      callback(null)
-    }
-  })
+  return localOnAuthStateChange(callback)
 }
 
-// Handle email confirmation
+// Handle email confirmation (not needed for local auth)
 export async function handleEmailConfirmation(): Promise<void> {
-  const { data, error } = await supabase.auth.getSession()
-  if (error) {
-    console.error('Session error:', error)
-    return
+  // No-op for local authentication
+  console.log('Email confirmation not required for local auth')
+}
+
+// League management functions (local storage implementation)
+const LEAGUES_KEY = 'fantasy-flix-leagues'
+
+function getStoredLeagues(): League[] {
+  if (typeof window === 'undefined') return []
+  
+  try {
+    const leagues = localStorage.getItem(LEAGUES_KEY)
+    return leagues ? JSON.parse(leagues) : []
+  } catch {
+    return []
+  }
+}
+
+function saveLeagues(leagues: League[]): void {
+  if (typeof window === 'undefined') return
+  
+  try {
+    localStorage.setItem(LEAGUES_KEY, JSON.stringify(leagues))
+  } catch (error) {
+    console.error('Failed to save leagues:', error)
+  }
+}
+
+export async function getUserLeagues(userId: string): Promise<League[]> {
+  console.log('Getting leagues for user:', userId)
+  
+  const allLeagues = getStoredLeagues()
+  // Return leagues where user is the creator or a participant
+  const userLeagues = allLeagues.filter(league => 
+    league.createdBy === userId || 
+    league.players.some(player => player.userId === userId)
+  )
+  
+  return userLeagues
+}
+
+export async function createLeague(leagueData: Omit<League, 'id' | 'currentPlayers' | 'players'>): Promise<League> {
+  console.log('Creating league:', leagueData)
+  
+  // Get the current user to add their display name
+  const currentUser = await getCurrentUser()
+  const creatorDisplayName = currentUser?.display_name || currentUser?.username || 'League Creator'
+  
+  // Create a basic league structure
+  const newLeague: League = {
+    ...leagueData,
+    id: 'league-' + Date.now(),
+    currentPlayers: 1,
+    players: [{
+      userId: leagueData.createdBy,
+      username: creatorDisplayName,
+      joinDate: new Date().toISOString(),
+      roster: [],
+      totalScore: 0,
+      rank: 1,
+      weeklyScores: []
+    }]
   }
   
-  if (data.session?.user?.email_confirmed_at) {
-    // User is confirmed, ensure profile exists
-    const { error: profileError } = await supabase
-      .from('users')
-      .upsert([{
-        id: data.session.user.id,
-        email: data.session.user.email!,
-        username: data.session.user.user_metadata?.username || data.session.user.email!.split('@')[0],
-        display_name: data.session.user.user_metadata?.display_name || data.session.user.user_metadata?.username || 'User',
-        total_earnings: 0,
-        total_leagues: 0,
-        championships: 0
-      }])
-
-    if (profileError) {
-      console.error('Profile creation error:', profileError)
-    }
-  }
+  // Save to localStorage
+  const existingLeagues = getStoredLeagues()
+  const updatedLeagues = [...existingLeagues, newLeague]
+  saveLeagues(updatedLeagues)
+  
+  console.log('League saved successfully:', newLeague.id)
+  return newLeague
 }
 
-// Additional helper functions can be added here for Supabase integration
-// League management will be handled through the database operations in supabase.ts
+// Function to update existing leagues with proper display names
+export async function updateLeaguePlayerNames(): Promise<void> {
+  const currentUser = await getCurrentUser()
+  if (!currentUser) return
+  
+  const allLeagues = getStoredLeagues()
+  let updated = false
+  
+  const updatedLeagues = allLeagues.map(league => {
+    // Update league creator's display name if it's currently "League Creator"
+    const updatedPlayers = league.players.map(player => {
+      if (player.userId === currentUser.id && player.username === 'League Creator') {
+        updated = true
+        return {
+          ...player,
+          username: currentUser.display_name || currentUser.username || 'League Creator'
+        }
+      }
+      return player
+    })
+    
+    return {
+      ...league,
+      players: updatedPlayers
+    }
+  })
+  
+  if (updated) {
+    saveLeagues(updatedLeagues)
+    console.log('Updated league player names with current user display name')
+  }
+}
