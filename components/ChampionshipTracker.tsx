@@ -225,7 +225,7 @@ const ChampionshipTracker = ({
         </div>
         <div className="glass-dark rounded-xl p-4 text-center">
           <div className="text-2xl font-black text-green-400">
-            {championshipStandings.reduce((sum, standing) => sum + (standing.oscarPoints || 0), 0)}
+            {championshipStandings.reduce((sum, standing) => sum + (standing.score || 0), 0)}
           </div>
           <div className="text-sm text-gray-400">Total Oscar Points</div>
         </div>
@@ -347,8 +347,7 @@ const ChampionshipTracker = ({
                         idx === 0 ? 'text-black opacity-80' :
                         idx < 3 ? 'text-white opacity-80' : 'text-gray-400'
                       }`}>
-                        <span>Base: {formatScore(standing.baseScore || 0)}</span>
-                        <span className="font-bold">Oscar: +{standing.oscarPoints || 0}</span>
+                        <span>Total Score: {formatScore(standing.score || 0)}</span>
                       </div>
                     </div>
                   </div>
