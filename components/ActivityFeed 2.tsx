@@ -204,7 +204,7 @@ export const generateRealActivity = (): ActivityItem[] => {
       user: 'Will',
       action: 'added',
       details: 'Adds Dog Man, Swaps Michael for Mission Impossible: Final Reckoning',
-      timestamp: new Date('2025-01-16').getTime(),
+      timestamp: new Date('2025-01-16').toISOString(),
       movieTitle: 'Dog Man',
       value: 0
     },
@@ -214,7 +214,7 @@ export const generateRealActivity = (): ActivityItem[] => {
       user: 'Tyler',
       action: 'added',
       details: 'Adds Conjuring: Last Rites, drops Mission Impossible: Final Reckoning - Penalty: 20 points',
-      timestamp: new Date('2025-08-18').getTime(),
+      timestamp: new Date('2025-08-18').toISOString(),
       movieTitle: 'The Conjuring: Last Rites',
       value: -20
     },
@@ -224,7 +224,7 @@ export const generateRealActivity = (): ActivityItem[] => {
       user: 'Tyler',
       action: 'swapped',
       details: 'Swaps Conjuring: Last Rites for Spiderman: Beyond the Spiderverse',
-      timestamp: new Date('2025-08-18').getTime(),
+      timestamp: new Date('2025-08-18').toISOString(),
       movieTitle: 'Beyond the Spider-verse',
       value: 0
     },
@@ -234,7 +234,7 @@ export const generateRealActivity = (): ActivityItem[] => {
       user: 'Tyler',
       action: 'penalty for unreleased movies',
       details: 'Michael does not release, Spiderman: Beyond the Spiderverse does not release - Penalty: 40 points',
-      timestamp: new Date('2025-08-18').getTime(),
+      timestamp: new Date('2025-08-18').toISOString(),
       movieTitle: 'Michael',
       value: -40
     },
@@ -244,7 +244,7 @@ export const generateRealActivity = (): ActivityItem[] => {
       user: 'Tyler',
       action: 'penalty for unreleased movies', 
       details: 'Moana does not release, Dog Man is auto-swapped - Penalty: 40 points',
-      timestamp: new Date('2025-12-31').getTime(),
+      timestamp: new Date('2025-12-31').toISOString(),
       movieTitle: 'Moana 2',
       value: -40
     },
@@ -254,7 +254,7 @@ export const generateRealActivity = (): ActivityItem[] => {
       user: 'Will',
       action: 'auto-swap penalty',
       details: 'Moana does not release, Dog Man is auto-swapped - Penalty: 20 points',
-      timestamp: new Date('2025-12-31').getTime(),
+      timestamp: new Date('2025-12-31').toISOString(),
       movieTitle: 'Moana 2',
       value: -20
     }
