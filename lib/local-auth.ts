@@ -248,15 +248,8 @@ function triggerAuthStateChange(user: User | null): void {
 if (typeof window !== 'undefined') {
   initializeDemoData()
   
-  // Auto-login demo user if no one is logged in
-  const currentUser = getCurrentStoredUser()
-  if (!currentUser) {
-    const demoUsers = getStoredUsers()
-    if (demoUsers.length > 0) {
-      saveCurrentUser(demoUsers[0]) // Auto-login first demo user
-      console.log('Auto-logged in demo user:', demoUsers[0].display_name)
-    }
-  }
+  // Don't auto-login anyone - users must explicitly log in
+  console.log('Local auth initialized - users must log in manually')
 }
 
 // Complete registration after email confirmation
