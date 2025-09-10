@@ -1,13 +1,17 @@
-// Simple local authentication - no external dependencies required
+// Supabase-based authentication with persistent database storage
 import { 
   User, 
-  login as localLogin, 
-  logout as localLogout, 
-  register as localRegister, 
-  getCurrentUser as getLocalCurrentUser, 
-  isLoggedIn as isLocalLoggedIn, 
-  onAuthStateChange as localOnAuthStateChange 
-} from './local-auth'
+  login as supabaseLogin, 
+  logout as supabaseLogout, 
+  register as supabaseRegister, 
+  getCurrentUser as getSupabaseCurrentUser, 
+  isLoggedIn as isSupabaseLoggedIn, 
+  onAuthStateChange as supabaseOnAuthStateChange,
+  getUserLeagues as getSupabaseUserLeagues,
+  createLeague as createSupabaseLeague,
+  handleEmailConfirmation as handleSupabaseEmailConfirmation,
+  confirmEmailAndActivateUser as confirmSupabaseEmailAndActivateUser
+} from './supabase-auth'
 
 // Re-export User interface
 export type { User }
@@ -15,20 +19,20 @@ export type { User }
 export interface League {
   id: string;
   name: string;
-  createdBy: string;
-  season: string;
+  description?: string;
+  max_players: number;
+  current_players: number;
+  entry_fee: number;
+  prize_pool: number;
+  draft_date?: string;
+  season_start: string;
+  season_end: string;
+  scoring_system: any;
   status: 'draft' | 'active' | 'completed';
-  maxPlayers: number;
-  currentPlayers: number;
-  entryFee: number;
-  prizePool: number;
-  draftDate?: string;
-  rules: {
-    budget: number;
-    positions: string[];
-    scoringPeriod: 'weekend' | 'week' | 'month';
-  };
-  players: LeaguePlayer[];
+  is_public: boolean;
+  creator_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface LeaguePlayer {
@@ -51,9 +55,9 @@ export interface MoviePick {
   weeklyScores: { week: number; score: number; boxOffice?: number }[];
 }
 
-// Simple local authentication functions
+// Supabase authentication functions
 export async function login(email: string, password: string): Promise<User | null> {
-  return localLogin(email, password)
+  return supabaseLogin(email, password)
 }
 
 export async function register(userData: { 
@@ -62,130 +66,46 @@ export async function register(userData: {
   displayName: string;
   password: string;
 }): Promise<{ user: User | null; needsConfirmation: boolean }> {
-  return localRegister(userData)
+  return supabaseRegister(userData)
 }
 
 export async function logout(): Promise<void> {
-  return localLogout()
+  return supabaseLogout()
 }
 
 export async function getCurrentUser(): Promise<User | null> {
-  return getLocalCurrentUser()
+  return getSupabaseCurrentUser()
 }
 
 export async function isLoggedIn(): Promise<boolean> {
-  return isLocalLoggedIn()
+  return isSupabaseLoggedIn()
 }
 
 // Session management
 export function onAuthStateChange(callback: (user: User | null) => void) {
-  return localOnAuthStateChange(callback)
+  return supabaseOnAuthStateChange(callback)
 }
 
-// Handle email confirmation (not needed for local auth)
+// Handle email confirmation with Supabase
 export async function handleEmailConfirmation(): Promise<void> {
-  // No-op for local authentication
-  console.log('Email confirmation not required for local auth')
+  return handleSupabaseEmailConfirmation()
 }
 
-// League management functions (local storage implementation)
-const LEAGUES_KEY = 'fantasy-flix-leagues'
-
-function getStoredLeagues(): League[] {
-  if (typeof window === 'undefined') return []
-  
-  try {
-    const leagues = localStorage.getItem(LEAGUES_KEY)
-    return leagues ? JSON.parse(leagues) : []
-  } catch {
-    return []
-  }
+// Confirm email and activate user
+export async function confirmEmailAndActivateUser(token: string): Promise<User | null> {
+  return confirmSupabaseEmailAndActivateUser(token)
 }
 
-function saveLeagues(leagues: League[]): void {
-  if (typeof window === 'undefined') return
-  
-  try {
-    localStorage.setItem(LEAGUES_KEY, JSON.stringify(leagues))
-  } catch (error) {
-    console.error('Failed to save leagues:', error)
-  }
-}
-
+// League management functions using Supabase database
 export async function getUserLeagues(userId: string): Promise<League[]> {
-  console.log('Getting leagues for user:', userId)
-  
-  const allLeagues = getStoredLeagues()
-  // Return leagues where user is the creator or a participant
-  const userLeagues = allLeagues.filter(league => 
-    league.createdBy === userId || 
-    league.players.some(player => player.userId === userId)
-  )
-  
-  return userLeagues
+  return getSupabaseUserLeagues(userId)
 }
 
-export async function createLeague(leagueData: Omit<League, 'id' | 'currentPlayers' | 'players'>): Promise<League> {
-  console.log('Creating league:', leagueData)
-  
-  // Get the current user to add their display name
-  const currentUser = await getCurrentUser()
-  const creatorDisplayName = currentUser?.display_name || currentUser?.username || 'League Creator'
-  
-  // Create a basic league structure
-  const newLeague: League = {
-    ...leagueData,
-    id: 'league-' + Date.now(),
-    currentPlayers: 1,
-    players: [{
-      userId: leagueData.createdBy,
-      username: creatorDisplayName,
-      joinDate: new Date().toISOString(),
-      roster: [],
-      totalScore: 0,
-      rank: 1,
-      weeklyScores: []
-    }]
-  }
-  
-  // Save to localStorage
-  const existingLeagues = getStoredLeagues()
-  const updatedLeagues = [...existingLeagues, newLeague]
-  saveLeagues(updatedLeagues)
-  
-  console.log('League saved successfully:', newLeague.id)
-  return newLeague
+export async function createLeague(leagueData: Omit<League, 'id' | 'current_players' | 'created_at' | 'updated_at'>): Promise<League> {
+  return createSupabaseLeague(leagueData)
 }
 
-// Function to update existing leagues with proper display names
+// Function to update existing leagues with proper display names (not needed with Supabase)
 export async function updateLeaguePlayerNames(): Promise<void> {
-  const currentUser = await getCurrentUser()
-  if (!currentUser) return
-  
-  const allLeagues = getStoredLeagues()
-  let updated = false
-  
-  const updatedLeagues = allLeagues.map(league => {
-    // Update league creator's display name if it's currently "League Creator"
-    const updatedPlayers = league.players.map(player => {
-      if (player.userId === currentUser.id && player.username === 'League Creator') {
-        updated = true
-        return {
-          ...player,
-          username: currentUser.display_name || currentUser.username || 'League Creator'
-        }
-      }
-      return player
-    })
-    
-    return {
-      ...league,
-      players: updatedPlayers
-    }
-  })
-  
-  if (updated) {
-    saveLeagues(updatedLeagues)
-    console.log('Updated league player names with current user display name')
-  }
+  console.log('League player names are managed by Supabase user profiles')
 }
