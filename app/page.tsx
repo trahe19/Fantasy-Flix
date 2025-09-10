@@ -17,8 +17,16 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <img src="/images/logo.png" alt="Fantasy Flix" className="w-24 h-24 mx-auto mb-8 animate-pulse" />
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-3 h-3 bg-amber-400 rounded-full animate-bounce"></div>
+            <div className="w-3 h-3 bg-red-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+            <div className="w-3 h-3 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+          </div>
+          <p className="text-white/60 mt-4 text-sm">Loading the experience...</p>
+        </div>
       </div>
     )
   }

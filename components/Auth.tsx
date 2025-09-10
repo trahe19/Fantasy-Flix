@@ -87,72 +87,97 @@ const Auth = ({ onLogin, onBack, defaultMode = 'login' }: AuthProps) => {
   }
 
   return (
-    <div className="min-h-screen gradient-dark flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated background shapes */}
-      <div className="absolute top-20 left-20 w-72 h-72 bg-blue-700 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-float" />
-      <div className="absolute bottom-20 right-20 w-72 h-72 bg-cyan-700 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-float" style={{ animationDelay: '2s' }} />
-      <div className="absolute top-40 right-40 w-72 h-72 bg-indigo-700 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-float" style={{ animationDelay: '4s' }} />
+    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      {/* Cinematic Background */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
+        style={{
+          backgroundImage: 'url(/images/hero-background.png)',
+          filter: 'brightness(0.4)'
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/60" />
+      
+      {/* Elegant Back Button */}
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="absolute top-8 left-8 z-20 text-white/80 hover:text-amber-400 transition-all duration-300 flex items-center space-x-2 group"
+        >
+          <svg className="w-5 h-5 group-hover:transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          <span className="font-medium">Back to Experience</span>
+        </button>
+      )}
       
       <div className="w-full max-w-md mx-auto relative z-10">
-        {onBack && (
-          <button
-            onClick={onBack}
-            className="absolute top-0 left-0 text-gray-300 hover:text-white transition-colors flex items-center space-x-2 group"
-          >
-            <svg className="w-5 h-5 group-hover:transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <span className="text-sm">Back to Home</span>
-          </button>
-        )}
-        
-        <div className="text-center mb-8 mt-12">
-          <div className="inline-block animate-glow rounded-full p-1 mb-6">
-            <span className="text-6xl">🎬</span>
+        {/* Elegant Header */}
+        <div className="text-center mb-12">
+          <div className="mb-8">
+            <img 
+              src="/images/logo.png" 
+              alt="Fantasy Flix" 
+              className="w-20 h-20 mx-auto mb-6 animate-pulse drop-shadow-2xl"
+              style={{
+                filter: 'drop-shadow(0 0 30px rgba(251, 191, 36, 0.3))'
+              }}
+            />
           </div>
-          <h1 className="text-5xl font-black mb-4 text-gradient-silver">
-            Fantasy Flix
+          <h1 className="text-4xl font-black mb-4">
+            <span className="bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent">
+              Fantasy Flix
+            </span>
           </h1>
-          <p className="text-gray-300 font-light">
-            {isLogin ? 'Welcome back, Champion' : 'Join the elite league'}
+          <p className="text-white/70 text-lg font-light">
+            {isLogin ? 'Welcome back to the experience' : 'Join the most exclusive entertainment league'}
           </p>
         </div>
 
-        <div className="glass-elegant rounded-3xl p-8">
+        {/* Premium Auth Card */}
+        <div className="bg-gradient-to-b from-gray-900/90 to-black/90 backdrop-blur-xl rounded-3xl p-8 border border-amber-500/20 shadow-2xl">
+          {/* Error Message */}
           {error && (
-            <div className="bg-red-500 bg-opacity-20 border border-red-500 text-red-300 rounded-xl p-3 mb-6">
-              {error}
+            <div className="bg-red-600/20 border border-red-500/50 text-red-300 rounded-2xl p-4 mb-6 backdrop-blur-sm">
+              <div className="flex items-center space-x-3">
+                <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{error}</span>
+              </div>
             </div>
           )}
           
+          {/* Success Message */}
           {successMessage && (
-            <div className="bg-green-500 bg-opacity-30 border-2 border-green-400 text-white rounded-xl p-4 mb-6">
-              <div className="flex items-start">
-                <svg className="w-6 h-6 mr-3 mt-0.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-green-600/20 border border-green-500/50 text-green-300 rounded-2xl p-4 mb-6 backdrop-blur-sm">
+              <div className="flex items-start space-x-3">
+                <svg className="w-6 h-6 mt-0.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div>
-                  <p className="font-bold text-lg text-white">Account Created Successfully!</p>
-                  <p className="text-green-100 mt-2 font-medium">{successMessage}</p>
+                  <p className="font-bold text-green-200">Welcome to the League!</p>
+                  <p className="text-green-300 text-sm mt-1">{successMessage}</p>
                 </div>
               </div>
             </div>
           )}
 
-          <div className="flex mb-6">
+          {/* Tab Switcher */}
+          <div className="flex mb-8 bg-black/30 rounded-2xl p-1">
             <button
               onClick={() => {
                 setIsLogin(true)
                 setError('')
                 setSuccessMessage('')
               }}
-              className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
+              className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all duration-300 ${
                 isLogin
-                  ? 'gradient-blue text-white'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-black shadow-2xl'
+                  : 'text-white/70 hover:text-white'
               }`}
             >
-              Sign In
+              Member Access
             </button>
             <button
               onClick={() => {
@@ -160,21 +185,21 @@ const Auth = ({ onLogin, onBack, defaultMode = 'login' }: AuthProps) => {
                 setError('')
                 setSuccessMessage('')
               }}
-              className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
+              className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all duration-300 ${
                 !isLogin
-                  ? 'gradient-blue text-white'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-gradient-to-r from-red-600 to-red-500 text-white shadow-2xl'
+                  : 'text-white/70 hover:text-white'
               }`}
             >
-              Sign Up
+              Join the Elite
             </button>
           </div>
           
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {!isLogin && (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-white/80 mb-3">
                     Username
                   </label>
                   <input
@@ -182,14 +207,14 @@ const Auth = ({ onLogin, onBack, defaultMode = 'login' }: AuthProps) => {
                     name="username"
                     value={formData.username}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-black bg-opacity-50 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
-                    placeholder="Your username"
+                    className="w-full px-4 py-4 bg-black/50 border border-gray-600 rounded-2xl text-white placeholder-gray-400 focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50 transition-all duration-300 backdrop-blur-sm"
+                    placeholder="Choose your username"
                     required={!isLogin}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-white/80 mb-3">
                     Display Name
                   </label>
                   <input
@@ -197,8 +222,8 @@ const Auth = ({ onLogin, onBack, defaultMode = 'login' }: AuthProps) => {
                     name="displayName"
                     value={formData.displayName}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-black bg-opacity-50 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
-                    placeholder="Your display name"
+                    className="w-full px-4 py-4 bg-black/50 border border-gray-600 rounded-2xl text-white placeholder-gray-400 focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50 transition-all duration-300 backdrop-blur-sm"
+                    placeholder="How others will see you"
                     required={!isLogin}
                   />
                 </div>
@@ -206,7 +231,7 @@ const Auth = ({ onLogin, onBack, defaultMode = 'login' }: AuthProps) => {
             )}
             
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-white/80 mb-3">
                 Email Address
               </label>
               <input
@@ -214,14 +239,14 @@ const Auth = ({ onLogin, onBack, defaultMode = 'login' }: AuthProps) => {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-black bg-opacity-50 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
+                className="w-full px-4 py-4 bg-black/50 border border-gray-600 rounded-2xl text-white placeholder-gray-400 focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50 transition-all duration-300 backdrop-blur-sm"
                 placeholder="your@email.com"
                 required
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-white/80 mb-3">
                 Password
               </label>
               <input
@@ -229,8 +254,8 @@ const Auth = ({ onLogin, onBack, defaultMode = 'login' }: AuthProps) => {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-black bg-opacity-50 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
-                placeholder="Enter password"
+                className="w-full px-4 py-4 bg-black/50 border border-gray-600 rounded-2xl text-white placeholder-gray-400 focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50 transition-all duration-300 backdrop-blur-sm"
+                placeholder="Enter your password"
                 required
               />
             </div>
@@ -238,62 +263,70 @@ const Auth = ({ onLogin, onBack, defaultMode = 'login' }: AuthProps) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full gradient-blue text-white font-bold py-4 rounded-xl hover:opacity-90 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`w-full py-4 rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed shadow-2xl ${
+                isLogin 
+                  ? 'bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black'
+                  : 'bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white'
+              }`}
             >
               {isLoading ? (
                 <span className="flex items-center justify-center">
-                  <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  {isLogin ? 'Signing In...' : 'Creating Account...'}
+                  <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin mr-3"></div>
+                  {isLogin ? 'Accessing...' : 'Creating Your Legacy...'}
                 </span>
               ) : (
-                isLogin ? 'Sign In' : 'Create Account'
+                <>
+                  {isLogin ? 'Enter the Experience' : 'Begin Your Journey'}
+                </>
               )}
             </button>
           </form>
 
+          {/* Demo Login Option */}
           {isLogin && (
-            <div className="mt-6">
+            <div className="mt-8">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-600"></div>
+                  <div className="w-full border-t border-gray-600/50"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-gray-900 text-gray-400">Or</span>
+                  <span className="px-4 bg-gray-900/90 text-gray-400">Or try our</span>
                 </div>
               </div>
               
               <button
                 onClick={handleQuickLogin}
                 disabled={isLoading}
-                className="w-full mt-4 glass border border-gray-500 text-gray-300 hover:text-white py-3 rounded-xl font-medium hover:card-glow transition-all"
+                className="w-full mt-6 border-2 border-gray-600 hover:border-amber-400/50 text-gray-300 hover:text-amber-400 py-3 rounded-2xl font-medium transition-all duration-300 backdrop-blur-sm"
               >
-                Quick Demo Login
+                Demo Experience
               </button>
             </div>
           )}
 
+          {/* Footer Switch */}
           {!successMessage && (
-            <div className="mt-6 text-center">
-              <p className="text-xs text-gray-400">
-                {isLogin ? "Don't have an account?" : "Already have an account?"}
+            <div className="mt-8 text-center">
+              <p className="text-gray-400 text-sm">
+                {isLogin ? "New to the experience?" : "Already a member?"}
                 <button
                   onClick={() => {
                     setIsLogin(!isLogin)
                     setError('')
                     setSuccessMessage('')
                   }}
-                  className="text-blue-400 hover:text-blue-300 ml-1"
+                  className="text-amber-400 hover:text-amber-300 ml-2 font-medium transition-colors duration-300"
                 >
-                  {isLogin ? 'Sign up' : 'Sign in'}
+                  {isLogin ? 'Join the elite' : 'Access your account'}
                 </button>
               </p>
             </div>
           )}
         </div>
       </div>
+      
+      {/* Subtle Spotlight Effect */}
+      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />
     </div>
   )
 }
