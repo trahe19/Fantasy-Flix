@@ -1,17 +1,14 @@
-// Supabase-based authentication with persistent database storage
+// Local storage-based authentication (temporarily restored)
 import { 
   User, 
-  login as supabaseLogin, 
-  logout as supabaseLogout, 
-  register as supabaseRegister, 
-  getCurrentUser as getSupabaseCurrentUser, 
-  isLoggedIn as isSupabaseLoggedIn, 
-  onAuthStateChange as supabaseOnAuthStateChange,
-  getUserLeagues as getSupabaseUserLeagues,
-  createLeague as createSupabaseLeague,
-  handleEmailConfirmation as handleSupabaseEmailConfirmation,
-  confirmEmailAndActivateUser as confirmSupabaseEmailAndActivateUser
-} from './supabase-auth'
+  login as localLogin, 
+  logout as localLogout, 
+  register as localRegister, 
+  getCurrentUser as getLocalCurrentUser, 
+  isLoggedIn as isLocalLoggedIn, 
+  onAuthStateChange as localOnAuthStateChange,
+  confirmEmailAndActivateUser as confirmLocalEmailAndActivateUser
+} from './local-auth'
 
 // Re-export User interface
 export type { User }
@@ -55,9 +52,9 @@ export interface MoviePick {
   weeklyScores: { week: number; score: number; boxOffice?: number }[];
 }
 
-// Supabase authentication functions
+// Local storage authentication functions
 export async function login(email: string, password: string): Promise<User | null> {
-  return supabaseLogin(email, password)
+  return localLogin(email, password)
 }
 
 export async function register(userData: { 
@@ -66,46 +63,73 @@ export async function register(userData: {
   displayName: string;
   password: string;
 }): Promise<{ user: User | null; needsConfirmation: boolean }> {
-  return supabaseRegister(userData)
+  return localRegister(userData)
 }
 
 export async function logout(): Promise<void> {
-  return supabaseLogout()
+  return localLogout()
 }
 
 export async function getCurrentUser(): Promise<User | null> {
-  return getSupabaseCurrentUser()
+  return getLocalCurrentUser()
 }
 
 export async function isLoggedIn(): Promise<boolean> {
-  return isSupabaseLoggedIn()
+  return isLocalLoggedIn()
 }
 
 // Session management
 export function onAuthStateChange(callback: (user: User | null) => void) {
-  return supabaseOnAuthStateChange(callback)
+  return localOnAuthStateChange(callback)
 }
 
-// Handle email confirmation with Supabase
+// Handle email confirmation
 export async function handleEmailConfirmation(): Promise<void> {
-  return handleSupabaseEmailConfirmation()
+  console.log('Email confirmation handled locally')
 }
 
 // Confirm email and activate user
 export async function confirmEmailAndActivateUser(token: string): Promise<User | null> {
-  return confirmSupabaseEmailAndActivateUser(token)
+  return confirmLocalEmailAndActivateUser(token)
 }
 
-// League management functions using Supabase database
+// League management functions using local storage
 export async function getUserLeagues(userId: string): Promise<League[]> {
-  return getSupabaseUserLeagues(userId)
+  if (typeof window === 'undefined') return []
+  
+  const leagues = localStorage.getItem('fantasy-flix-leagues')
+  if (!leagues) return []
+  
+  try {
+    const allLeagues = JSON.parse(leagues)
+    return Object.values(allLeagues).filter((league: any) => 
+      league.creator_id === userId || league.players?.includes(userId)
+    )
+  } catch {
+    return []
+  }
 }
 
 export async function createLeague(leagueData: Omit<League, 'id' | 'current_players' | 'created_at' | 'updated_at'>): Promise<League> {
-  return createSupabaseLeague(leagueData)
+  const newLeague: League = {
+    ...leagueData,
+    id: Math.random().toString(36).substr(2, 9),
+    current_players: 1,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  }
+  
+  if (typeof window !== 'undefined') {
+    const leagues = localStorage.getItem('fantasy-flix-leagues')
+    const allLeagues = leagues ? JSON.parse(leagues) : {}
+    allLeagues[newLeague.id] = newLeague
+    localStorage.setItem('fantasy-flix-leagues', JSON.stringify(allLeagues))
+  }
+  
+  return newLeague
 }
 
-// Function to update existing leagues with proper display names (not needed with Supabase)
+// Function to update existing leagues with proper display names
 export async function updateLeaguePlayerNames(): Promise<void> {
-  console.log('League player names are managed by Supabase user profiles')
+  console.log('League player names updated via local storage')
 }
