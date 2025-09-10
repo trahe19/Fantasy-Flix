@@ -133,59 +133,59 @@ const Dashboard = memo(function Dashboard() {
   }, [currentUser])
 
   return (
-    <div className="px-4 py-6">
+    <div className="px-4 py-6 min-h-screen">
       {/* League Stats - Only show if user has leagues */}
       {userLeagues.length > 0 ? (
-        <div className="grid grid-cols-4 gap-4 mb-8">
-          <div className="glass-elegant rounded-xl p-6">
+        <div className="grid grid-cols-4 gap-6 mb-12">
+          <div className="bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl rounded-2xl p-8 border border-amber-500/20 shadow-2xl">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 dark:text-gray-400 original:text-slate-400 text-sm font-medium">League Players</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white original:text-white">
+                <p className="text-white/70 text-sm font-medium mb-2">League Players</p>
+                <p className="text-3xl font-black text-white">
                   {userLeagues[0]?.currentPlayers || 0}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-slate-700 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center shadow-xl">
+                <svg className="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
                 </svg>
               </div>
             </div>
           </div>
-          <div className="glass-elegant rounded-xl p-6">
+          <div className="bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl rounded-2xl p-8 border border-amber-500/20 shadow-2xl">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 dark:text-gray-400 original:text-slate-400 text-sm font-medium">Your Position</p>
-                <p className="text-2xl font-bold text-emerald-400">-</p>
+                <p className="text-white/70 text-sm font-medium mb-2">Your Position</p>
+                <p className="text-3xl font-black text-amber-400">-</p>
               </div>
-              <div className="w-12 h-12 bg-emerald-900 bg-opacity-30 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center shadow-xl">
+                <svg className="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                 </svg>
               </div>
             </div>
           </div>
-          <div className="glass-elegant rounded-xl p-6">
+          <div className="bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl rounded-2xl p-8 border border-amber-500/20 shadow-2xl">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 dark:text-gray-400 original:text-slate-400 text-sm font-medium">Your Score</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white original:text-white">-</p>
+                <p className="text-white/70 text-sm font-medium mb-2">Your Score</p>
+                <p className="text-3xl font-black text-white">-</p>
               </div>
-              <div className="w-12 h-12 bg-slate-700 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-14 h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-xl">
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </div>
             </div>
           </div>
-          <div className="glass-elegant rounded-xl p-6">
+          <div className="bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl rounded-2xl p-8 border border-amber-500/20 shadow-2xl">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 dark:text-gray-400 original:text-slate-400 text-sm font-medium">Profit/Movie</p>
-                <p className="text-2xl font-bold text-emerald-400">-</p>
+                <p className="text-white/70 text-sm font-medium mb-2">Profit/Movie</p>
+                <p className="text-3xl font-black text-green-400">-</p>
               </div>
-              <div className="w-12 h-12 bg-emerald-900 bg-opacity-30 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-xl">
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                 </svg>
               </div>
@@ -194,21 +194,21 @@ const Dashboard = memo(function Dashboard() {
         </div>
       ) : null}
 
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-black text-gray-900 dark:text-white original:text-white">Your Leagues</h2>
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-4xl font-black bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent">Your Leagues</h2>
         <div className="space-x-4">
           <button 
             onClick={() => setShowBrowseLeagues(true)}
-            className="glass-dark text-white px-6 py-3 rounded-xl font-bold hover:card-glow transition-all">
+            className="bg-gradient-to-r from-amber-500 to-yellow-500 text-black px-8 py-3 rounded-2xl font-bold hover:from-amber-400 hover:to-yellow-400 transition-all duration-300 transform hover:scale-105 shadow-xl">
             Browse Public Leagues
           </button>
         </div>
       </div>
 
       {userLeagues.length > 0 ? (
-        <div className="grid gap-8 lg:grid-cols-2 mb-8">
+        <div className="grid gap-8 lg:grid-cols-2 mb-12">
           {userLeagues.map((league) => (
-            <div key={league.id} className="glass-dark rounded-2xl p-8">
+            <div key={league.id} className="bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl rounded-3xl p-8 border border-amber-500/20 shadow-2xl hover:shadow-amber-500/10 transition-all duration-300">
               {/* League Header */}
               <div className="flex justify-between items-center mb-6">
                 <div>
@@ -243,37 +243,37 @@ const Dashboard = memo(function Dashboard() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 glass-dark rounded-2xl">
-          <div className="w-16 h-16 mx-auto mb-4 bg-slate-700 rounded-lg flex items-center justify-center">
-            <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center py-24 bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl rounded-3xl border border-amber-500/20 shadow-2xl">
+          <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl flex items-center justify-center shadow-2xl border border-white/10">
+            <svg className="w-10 h-10 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
           </div>
-          <h3 className="text-2xl font-bold text-white mb-3">No Leagues Yet</h3>
-          <p className="text-gray-400 text-lg mb-6">Head to "My Leagues" to create your first league!</p>
+          <h3 className="text-4xl font-black text-white mb-4 bg-gradient-to-r from-amber-300 to-yellow-300 bg-clip-text text-transparent">No Leagues Yet</h3>
+          <p className="text-white/70 text-lg mb-8 max-w-md mx-auto">Head to "My Leagues" to create your first league and start your cinematic journey!</p>
         </div>
       )}
 
       {/* Biggest Upcoming Movies - Next 30 Days */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-3xl font-black text-gray-900 dark:text-white original:text-white">Biggest Upcoming Movies</h2>
-          <span className="text-sm text-gray-400">Next 30 Days • Most Anticipated</span>
+      <div className="mb-12">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-4xl font-black bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent">Biggest Upcoming Movies</h2>
+          <span className="text-sm text-amber-400 font-medium bg-black/30 px-4 py-2 rounded-xl backdrop-blur-sm border border-amber-500/20">Next 30 Days • Most Anticipated</span>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-12">
           {isLoadingMovies ? (
             // Loading skeletons
             [...Array(6)].map((_, i) => (
-              <div key={i} className="glass-dark rounded-xl overflow-hidden animate-pulse">
-                <div className="bg-gray-700 aspect-[2/3]"></div>
+              <div key={i} className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl overflow-hidden animate-pulse border border-white/5">
+                <div className="bg-gray-700/50 aspect-[2/3]"></div>
               </div>
             ))
           ) : (
             upcomingMovies.map((movie) => (
               <div
                 key={movie.id}
-                className="glass-dark rounded-xl overflow-hidden transform hover:scale-105 transition-all duration-300 cursor-pointer group"
+                className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-xl rounded-2xl overflow-hidden transform hover:scale-105 transition-all duration-300 cursor-pointer group border border-amber-500/10 hover:border-amber-500/30 shadow-xl hover:shadow-amber-500/20"
                 onClick={() => handleMovieClick(movie)}
               >
                 <div className="aspect-[2/3] relative overflow-hidden">
@@ -301,11 +301,11 @@ const Dashboard = memo(function Dashboard() {
 
         {/* 2025-2026 Movies Section */}
         <div className="mb-6">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white original:text-white mb-4">2025-2026 Movies</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <h3 className="text-2xl font-black text-white mb-6 bg-gradient-to-r from-red-400 to-red-300 bg-clip-text text-transparent">2025-2026 Movies</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {isLoadingMovies ? (
               [...Array(3)].map((_, i) => (
-                <div key={i} className="glass-dark rounded-xl p-4 animate-pulse">
+                <div key={i} className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 animate-pulse border border-white/5">
                   <div className="flex space-x-4">
                     <div className="bg-gray-700 rounded w-16 h-24"></div>
                     <div className="flex-1">
@@ -320,7 +320,7 @@ const Dashboard = memo(function Dashboard() {
               movies2025.slice(0, 3).map((movie) => (
                 <div
                   key={movie.id}
-                  className="glass-dark rounded-xl p-4 hover:card-glow transition-all cursor-pointer"
+                  className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-xl rounded-2xl p-6 hover:shadow-amber-500/20 transition-all cursor-pointer border border-amber-500/10 hover:border-amber-500/30 shadow-xl"
                   onClick={() => handleMovieClick(movie)}
                 >
                   <div className="flex space-x-4">

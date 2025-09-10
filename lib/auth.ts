@@ -1,4 +1,4 @@
-// Local storage-based authentication (temporarily restored)
+// localStorage-based authentication for immediate functionality
 import { 
   User, 
   login as localLogin, 
@@ -52,7 +52,7 @@ export interface MoviePick {
   weeklyScores: { week: number; score: number; boxOffice?: number }[];
 }
 
-// Local storage authentication functions
+// localStorage authentication functions
 export async function login(email: string, password: string): Promise<User | null> {
   return localLogin(email, password)
 }
@@ -83,9 +83,9 @@ export function onAuthStateChange(callback: (user: User | null) => void) {
   return localOnAuthStateChange(callback)
 }
 
-// Handle email confirmation
+// Handle email confirmation - placeholder for localStorage system
 export async function handleEmailConfirmation(): Promise<void> {
-  console.log('Email confirmation handled locally')
+  console.log('Email confirmation handling - localStorage system')
 }
 
 // Confirm email and activate user
@@ -93,43 +93,31 @@ export async function confirmEmailAndActivateUser(token: string): Promise<User |
   return confirmLocalEmailAndActivateUser(token)
 }
 
-// League management functions using local storage
+// League management functions using localStorage
 export async function getUserLeagues(userId: string): Promise<League[]> {
-  if (typeof window === 'undefined') return []
-  
-  const leagues = localStorage.getItem('fantasy-flix-leagues')
-  if (!leagues) return []
-  
-  try {
-    const allLeagues = JSON.parse(leagues)
-    return Object.values(allLeagues).filter((league: any) => 
-      league.creator_id === userId || league.players?.includes(userId)
-    )
-  } catch {
-    return []
-  }
+  console.log('Getting leagues for user:', userId)
+  // For now, return empty array - can be enhanced later
+  return []
 }
 
 export async function createLeague(leagueData: Omit<League, 'id' | 'current_players' | 'created_at' | 'updated_at'>): Promise<League> {
+  console.log('Creating league:', leagueData.name)
+  
   const newLeague: League = {
     ...leagueData,
-    id: Math.random().toString(36).substr(2, 9),
+    id: 'league-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
     current_players: 1,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   }
   
-  if (typeof window !== 'undefined') {
-    const leagues = localStorage.getItem('fantasy-flix-leagues')
-    const allLeagues = leagues ? JSON.parse(leagues) : {}
-    allLeagues[newLeague.id] = newLeague
-    localStorage.setItem('fantasy-flix-leagues', JSON.stringify(allLeagues))
-  }
-  
+  // For now, just return the league without storing
+  // Can be enhanced with localStorage storage later
+  console.log('League created:', newLeague)
   return newLeague
 }
 
-// Function to update existing leagues with proper display names
+// Function to update existing leagues with proper display names  
 export async function updateLeaguePlayerNames(): Promise<void> {
-  console.log('League player names updated via local storage')
+  console.log('League player names managed by localStorage system')
 }

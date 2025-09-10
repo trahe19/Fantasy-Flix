@@ -52,7 +52,7 @@ const ActivityFeed = ({ activities, showFilters = true, maxItems = 10 }: Activit
       case 'trade': return 'text-blue-400'
       case 'pickup': return 'text-green-400'
       case 'drop': return 'text-red-400'
-      case 'draft': return 'text-purple-400'
+      case 'draft': return 'text-blue-400'
       case 'score_update': return 'text-yellow-400'
       case 'league_join': return 'text-cyan-400'
       default: return 'text-gray-400'

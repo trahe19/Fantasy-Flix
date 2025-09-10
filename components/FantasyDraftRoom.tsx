@@ -52,7 +52,7 @@ const FantasyDraftRoom = ({ draftRoom, currentUser, leagueMembers, onDraftPick, 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Hollywood Header */}
-      <div className="bg-gradient-to-r from-yellow-600 via-red-600 to-purple-600 p-1">
+      <div className="bg-gradient-to-r from-yellow-600 via-blue-600 to-cyan-600 p-1">
         <div className="bg-slate-900 mx-1 mb-1 rounded-lg">
           <div className="flex items-center justify-between p-4">
             <div className="flex items-center space-x-4">
@@ -234,7 +234,7 @@ const FantasyDraftRoom = ({ draftRoom, currentUser, leagueMembers, onDraftPick, 
                       {/* Budget Badge */}
                       {movie.productionBudget && (
                         <div className={`absolute bottom-2 left-2 rounded-lg px-2 py-1 ${
-                          isIndieBudget ? 'bg-purple-600 bg-opacity-90' :
+                          isIndieBudget ? 'bg-blue-600 bg-opacity-90' :
                           isLowBudget ? 'bg-blue-600 bg-opacity-90' : 'bg-green-600 bg-opacity-90'
                         }`}>
                           <span className="text-xs text-white font-bold">
@@ -263,7 +263,7 @@ const FantasyDraftRoom = ({ draftRoom, currentUser, leagueMembers, onDraftPick, 
                       
                       {/* Potential Bonuses Hint */}
                       <div className="flex items-center space-x-1 mt-1">
-                        {isIndieBudget && <span className="text-xs text-purple-400">🚀</span>}
+                        {isIndieBudget && <span className="text-xs text-blue-400">🚀</span>}
                         {isLowBudget && !isIndieBudget && <span className="text-xs text-blue-400">⚡</span>}
                         {movie.imdbRating && movie.imdbRating >= 8.5 && <span className="text-xs text-yellow-400">💰</span>}
                         {movie.imdbRating && movie.imdbRating >= 8.0 && movie.imdbRating < 8.5 && <span className="text-xs text-green-400">💵</span>}
@@ -299,7 +299,7 @@ const FantasyDraftRoom = ({ draftRoom, currentUser, leagueMembers, onDraftPick, 
                     <p className="text-sm text-gray-400">Production Budget</p>
                     <p className="font-bold text-green-400">💰 ${selectedMovie.productionBudget}M</p>
                     {selectedMovie.productionBudget < 20 && (
-                      <p className="text-xs text-purple-400 mt-1">🚀 High Multiplier Bonus!</p>
+                      <p className="text-xs text-blue-400 mt-1">🚀 High Multiplier Bonus!</p>
                     )}
                     {selectedMovie.productionBudget < 50 && selectedMovie.productionBudget >= 20 && (
                       <p className="text-xs text-blue-400 mt-1">⚡ Multiplier Bonus!</p>
@@ -345,7 +345,7 @@ const FantasyDraftRoom = ({ draftRoom, currentUser, leagueMembers, onDraftPick, 
                     {selectedMovie.productionBudget && selectedMovie.productionBudget < 50 && (
                       <p className="text-blue-300">🚀 Multiplier Bonus Eligible</p>
                     )}
-                    <p className="text-purple-300">🏆 Oscar Points: 5 wins, 2 nominations</p>
+                    <p className="text-blue-300">🏆 Oscar Points: 5 wins, 2 nominations</p>
                   </div>
                 </div>
               </div>
@@ -377,7 +377,7 @@ const FantasyDraftRoom = ({ draftRoom, currentUser, leagueMembers, onDraftPick, 
                     </div>
                     <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
                       <div 
-                        className="bg-gradient-to-r from-blue-400 to-purple-500 h-2 rounded-full transition-all"
+                        className="bg-gradient-to-r from-blue-400 to-cyan-500 h-2 rounded-full transition-all"
                         style={{ width: `${Math.min((pickCount / 10) * 100, 100)}%` }}
                       />
                     </div>

@@ -37,7 +37,7 @@ const LandingPage = ({ onLogin }: LandingPageProps) => {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-4">
-              <img src="/images/logo.png" alt="Fantasy Flix" className="w-12 h-12 drop-shadow-2xl" />
+              <img src="/images/logo.png" alt="Fantasy Flix" className="w-12 h-12 drop-shadow-2xl object-contain" style={{aspectRatio: '1/1'}} />
               <span className="text-2xl font-black bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 bg-clip-text text-transparent">
                 Fantasy Flix
               </span>
@@ -81,7 +81,7 @@ const LandingPage = ({ onLogin }: LandingPageProps) => {
         
         <div className="relative z-10 text-center px-6 lg:px-8 max-w-6xl mx-auto">
           <div className="mb-8 animate-fade-in-up">
-            <img src="/images/logo.png" alt="Fantasy Flix Logo" className="w-24 h-24 mx-auto mb-8 drop-shadow-2xl animate-pulse-glow" />
+            <img src="/images/logo.png" alt="Fantasy Flix Logo" className="w-24 h-24 mx-auto mb-8 drop-shadow-2xl animate-pulse-glow object-contain" style={{aspectRatio: '1/1'}} />
           </div>
           
           <h1 className="text-6xl md:text-8xl font-black mb-8 leading-tight">
@@ -262,7 +262,7 @@ const LandingPage = ({ onLogin }: LandingPageProps) => {
             </div>
             <div className="relative">
               <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-10 rounded-3xl border border-amber-500/20 shadow-2xl">
-                <img src="/images/logo.png" alt="Fantasy Flix" className="w-20 h-20 mx-auto mb-8 animate-pulse-glow" />
+                <img src="/images/logo.png" alt="Fantasy Flix" className="w-20 h-20 mx-auto mb-8 animate-pulse-glow object-contain" style={{aspectRatio: '1/1'}} />
                 <h3 className="text-2xl font-bold text-white mb-6 text-center">Ready to Join the Elite?</h3>
                 <p className="text-white/70 mb-8 text-center leading-relaxed">
                   Step into the world's most sophisticated entertainment competition. 
@@ -284,7 +284,7 @@ const LandingPage = ({ onLogin }: LandingPageProps) => {
       <section id="join" className="py-24 bg-gradient-to-r from-red-900 via-black to-amber-900">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
           <div className="mb-12">
-            <img src="/images/logo.png" alt="Fantasy Flix" className="w-24 h-24 mx-auto mb-8 animate-pulse-glow" />
+            <img src="/images/logo.png" alt="Fantasy Flix" className="w-24 h-24 mx-auto mb-8 animate-pulse-glow object-contain" style={{aspectRatio: '1/1'}} />
           </div>
           <h2 className="text-6xl md:text-7xl font-black text-white mb-8">
             Your Seat
@@ -316,7 +316,7 @@ const LandingPage = ({ onLogin }: LandingPageProps) => {
           <div className="grid md:grid-cols-4 gap-12">
             <div className="md:col-span-2">
               <div className="flex items-center space-x-4 mb-6">
-                <img src="/images/logo.png" alt="Fantasy Flix" className="w-12 h-12" />
+                <img src="/images/logo.png" alt="Fantasy Flix" className="w-12 h-12 object-contain" style={{aspectRatio: '1/1'}} />
                 <span className="text-3xl font-black bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">
                   Fantasy Flix
                 </span>

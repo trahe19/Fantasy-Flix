@@ -333,7 +333,7 @@ export async function getUserLeagues(userId: string): Promise<League[]> {
       .filter(Boolean) || []
     
     console.log('Found leagues:', leagues.length)
-    return leagues as League[]
+    return leagues.flat() as League[]
   } catch (error) {
     console.error('Get user leagues failed:', error)
     return []
