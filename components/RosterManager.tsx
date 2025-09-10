@@ -59,7 +59,7 @@ const RosterManager = ({ leagueId, currentUser, currentPeriod, roster, onRosterM
     <div className="min-h-screen relative overflow-hidden">
       {/* Hollywood Background */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full opacity-8 animate-float" />
+        <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full opacity-8 animate-float" />
         <div className="absolute bottom-20 right-20 w-48 h-48 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full opacity-10 animate-pulse" />
         <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full opacity-15 animate-float" style={{ animationDelay: '1s' }} />
       </div>

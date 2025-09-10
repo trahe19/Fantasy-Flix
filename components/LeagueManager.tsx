@@ -58,18 +58,20 @@ const LeagueManager = () => {
 
       const newLeague = await createLeague({
         name: formData.name.trim(),
-        createdBy: currentUser.id,
-        season: '2025-2026',
-        status: 'draft',
-        maxPlayers: formData.maxPlayers,
-        entryFee: 0,
-        prizePool: 0,
-        draftDate: draftDateTime,
-        rules: {
+        creator_id: currentUser.id,
+        max_players: formData.maxPlayers,
+        entry_fee: 0,
+        prize_pool: 0,
+        draft_date: draftDateTime,
+        season_start: new Date().toISOString(),
+        season_end: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
+        scoring_system: {
           budget: 1000,
           positions: ['Blockbuster', 'Indie', 'Action', 'Drama', 'Horror'],
           scoringPeriod: 'weekend'
-        }
+        },
+        status: 'draft',
+        is_public: formData.isPublic
       })
 
       // Refresh leagues list to show the new league with proper user display name
