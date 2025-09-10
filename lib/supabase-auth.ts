@@ -100,21 +100,27 @@ export async function register(userData: {
       throw error
     }
     
-    // If user is created but not confirmed, we need confirmation
-    if (data.user && !data.user.email_confirmed_at) {
+    // Always create user profile if we have a user (regardless of confirmation status)
+    if (data.user) {
+      try {
+        await createUserProfile(data.user, userData.username, userData.displayName)
+      } catch (profileError: any) {
+        console.log('Profile creation error (might already exist):', profileError)
+      }
+      
+      // If email is confirmed, return user immediately
+      if (data.user.email_confirmed_at) {
+        const userProfile = await getUserProfile(data.user.id)
+        return {
+          user: userProfile,
+          needsConfirmation: false
+        }
+      }
+      
+      // If email needs confirmation
       return {
         user: null,
         needsConfirmation: true
-      }
-    }
-    
-    // If user is immediately confirmed, create profile
-    if (data.user && data.user.email_confirmed_at) {
-      await createUserProfile(data.user, userData.username, userData.displayName)
-      const userProfile = await getUserProfile(data.user.id)
-      return {
-        user: userProfile,
-        needsConfirmation: false
       }
     }
     
