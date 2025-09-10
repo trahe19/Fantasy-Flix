@@ -1,11 +1,35 @@
--- Fantasy Flix Database Schema
--- Run this in your Supabase SQL Editor to create all tables
+-- Clean Slate: Remove all existing Fantasy Flix tables and rebuild from scratch
+-- This will fix all trigger conflicts by starting fresh
+
+-- WARNING: This will delete all existing Fantasy Flix data!
+-- Only run this if you're okay with losing current data
+
+-- Drop all triggers first (to avoid conflicts)
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
+DROP TRIGGER IF EXISTS update_leagues_updated_at ON leagues;
+DROP TRIGGER IF EXISTS update_movies_updated_at ON movies;
+DROP TRIGGER IF EXISTS update_rosters_updated_at ON rosters;
+
+-- Drop all tables in correct order (handle foreign key dependencies)
+DROP TABLE IF EXISTS league_invitations CASCADE;
+DROP TABLE IF EXISTS scoring_history CASCADE;
+DROP TABLE IF EXISTS rosters CASCADE;
+DROP TABLE IF EXISTS drafts CASCADE;
+DROP TABLE IF EXISTS league_members CASCADE;
+DROP TABLE IF EXISTS leagues CASCADE;
+DROP TABLE IF EXISTS movies CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+-- Drop functions
+DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;
+
+-- Now create everything fresh (no triggers, no conflicts)
 
 -- Enable RLS (Row Level Security)
 ALTER DEFAULT PRIVILEGES REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
 
 -- Users table (linked to Supabase auth.users)
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE users (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email VARCHAR UNIQUE NOT NULL,
   username VARCHAR UNIQUE NOT NULL,
@@ -19,7 +43,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Movies table (stores TMDB data)
-CREATE TABLE IF NOT EXISTS movies (
+CREATE TABLE movies (
   id INTEGER PRIMARY KEY, -- TMDB ID
   title VARCHAR NOT NULL,
   release_date DATE,
@@ -40,7 +64,7 @@ CREATE TABLE IF NOT EXISTS movies (
 );
 
 -- Leagues table
-CREATE TABLE IF NOT EXISTS leagues (
+CREATE TABLE leagues (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name VARCHAR NOT NULL,
   description TEXT,
@@ -60,7 +84,7 @@ CREATE TABLE IF NOT EXISTS leagues (
 );
 
 -- League members (many-to-many relationship)
-CREATE TABLE IF NOT EXISTS league_members (
+CREATE TABLE league_members (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   league_id UUID REFERENCES leagues(id) ON DELETE CASCADE,
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -71,7 +95,7 @@ CREATE TABLE IF NOT EXISTS league_members (
 );
 
 -- Drafts table (track draft picks)
-CREATE TABLE IF NOT EXISTS drafts (
+CREATE TABLE drafts (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   league_id UUID REFERENCES leagues(id) ON DELETE CASCADE,
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -85,7 +109,7 @@ CREATE TABLE IF NOT EXISTS drafts (
 );
 
 -- Rosters table (current team lineups)
-CREATE TABLE IF NOT EXISTS rosters (
+CREATE TABLE rosters (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
   league_id UUID REFERENCES leagues(id) ON DELETE CASCADE,
@@ -100,7 +124,7 @@ CREATE TABLE IF NOT EXISTS rosters (
 );
 
 -- Scoring history (track daily/weekly scoring updates)
-CREATE TABLE IF NOT EXISTS scoring_history (
+CREATE TABLE scoring_history (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   roster_id UUID REFERENCES rosters(id) ON DELETE CASCADE,
   movie_id INTEGER REFERENCES movies(id),
@@ -111,7 +135,7 @@ CREATE TABLE IF NOT EXISTS scoring_history (
 );
 
 -- League invitations
-CREATE TABLE IF NOT EXISTS league_invitations (
+CREATE TABLE league_invitations (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   league_id UUID REFERENCES leagues(id) ON DELETE CASCADE,
   inviter_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -124,34 +148,13 @@ CREATE TABLE IF NOT EXISTS league_invitations (
 );
 
 -- Create indexes for better performance
-CREATE INDEX IF NOT EXISTS idx_league_members_league_id ON league_members(league_id);
-CREATE INDEX IF NOT EXISTS idx_league_members_user_id ON league_members(user_id);
-CREATE INDEX IF NOT EXISTS idx_drafts_league_id ON drafts(league_id);
-CREATE INDEX IF NOT EXISTS idx_rosters_user_league ON rosters(user_id, league_id);
-CREATE INDEX IF NOT EXISTS idx_rosters_league_id ON rosters(league_id);
-CREATE INDEX IF NOT EXISTS idx_movies_release_date ON movies(release_date);
-CREATE INDEX IF NOT EXISTS idx_scoring_history_date ON scoring_history(scoring_date);
-
--- Create updated_at trigger function (if it doesn't exist)
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
-
--- Note: Triggers are already created - skipping to avoid conflicts
--- The updated_at columns will be managed by the application code
-
--- Insert sample data
-INSERT INTO users (email, username, display_name, total_earnings, total_leagues, championships) VALUES 
-('demo@fantasyflix.com', 'boxofficelegend', 'BoxOfficeLegend', 25420.50, 8, 3),
-('sarah@example.com', 'moviemogul', 'Sarah M', 18950.25, 5, 1),
-('mike@example.com', 'filmfanatic', 'Mike Chen', 12300.75, 4, 0),
-('emma@example.com', 'cinemaqueen', 'Emma Rodriguez', 31200.00, 12, 5),
-('alex@example.com', 'blockbusterbro', 'Alex Thompson', 8750.50, 3, 0)
-ON CONFLICT (email) DO NOTHING;
+CREATE INDEX idx_league_members_league_id ON league_members(league_id);
+CREATE INDEX idx_league_members_user_id ON league_members(user_id);
+CREATE INDEX idx_drafts_league_id ON drafts(league_id);
+CREATE INDEX idx_rosters_user_league ON rosters(user_id, league_id);
+CREATE INDEX idx_rosters_league_id ON rosters(league_id);
+CREATE INDEX idx_movies_release_date ON movies(release_date);
+CREATE INDEX idx_scoring_history_date ON scoring_history(scoring_date);
 
 -- Insert sample movies (current popular films)
 INSERT INTO movies (id, title, release_date, poster_path, overview, vote_average, popularity) VALUES 
@@ -159,16 +162,9 @@ INSERT INTO movies (id, title, release_date, poster_path, overview, vote_average
 (533535, 'Deadpool & Wolverine', '2024-07-24', '/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg', 'A listless Wade Wilson toils away in civilian life.', 7.7, 2845.123),
 (558449, 'Gladiator II', '2024-11-13', '/2cxhvwyEwRlysAmRH4iodkvo0z5.jpg', 'Years after witnessing the death of the revered hero Maximus.', 6.8, 2543.876),
 (402431, 'Wicked', '2024-11-20', '/c5Tqxeo1UpBvnAc3csUm7j3hlQl.jpg', 'Elphaba and Glinda become extremely unlikely friends.', 8.6, 3456.789),
-(1241982, 'Moana 2', '2024-11-27', '/yh64qw9mgXBvlaWDi7Q9tpUBAvH.jpg', 'Moana journeys alongside Maui and a new crew.', 7.0, 4567.890)
-ON CONFLICT (id) DO NOTHING;
+(1241982, 'Moana 2', '2024-11-27', '/yh64qw9mgXBvlaWDi7Q9tpUBAvH4iodkvo0z5.jpg', 'Moana journeys alongside Maui and a new crew.', 7.0, 4567.890);
 
--- Enable Row Level Security (optional - for production)
--- ALTER TABLE users ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE leagues ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE league_members ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE rosters ENABLE ROW LEVEL SECURITY;
-
--- Grant permissions for anon users (adjust as needed)
+-- Grant permissions
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
 GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated;

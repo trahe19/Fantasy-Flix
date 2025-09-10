@@ -20,6 +20,8 @@ const LeagueManager = () => {
   const [selectedLeague, setSelectedLeague] = useState<any>(null)
   const [currentUser, setCurrentUser] = useState<any>(null)
   const [currentStep, setCurrentStep] = useState(1)
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [isInviting, setIsInviting] = useState(false)
   const [formData, setFormData] = useState<LeagueFormData>({
     name: '',
     maxPlayers: 6,
@@ -96,6 +98,44 @@ const LeagueManager = () => {
       ...prev,
       [name]: name === 'maxPlayers' ? parseInt(value) || 0 : value
     }))
+  }
+
+  const sendInvite = async () => {
+    if (!inviteEmail.trim() || !selectedLeague || !currentUser) {
+      alert('Please enter a valid email address')
+      return
+    }
+
+    setIsInviting(true)
+    
+    try {
+      const response = await fetch('/api/send-invite', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: inviteEmail.trim(),
+          leagueId: selectedLeague.id,
+          leagueName: selectedLeague.name,
+          inviterName: currentUser.display_name || currentUser.username || 'A friend'
+        }),
+      })
+
+      const result = await response.json()
+      
+      if (result.success) {
+        alert(`✅ Invitation sent to ${inviteEmail}!`)
+        setInviteEmail('')
+      } else {
+        alert(`❌ Failed to send invitation: ${result.error}`)
+      }
+    } catch (error) {
+      console.error('Error sending invite:', error)
+      alert('❌ Failed to send invitation. Please try again.')
+    } finally {
+      setIsInviting(false)
+    }
   }
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -554,14 +594,22 @@ const LeagueManager = () => {
                   <div className="flex space-x-2">
                     <input
                       type="email"
+                      value={inviteEmail}
+                      onChange={(e) => setInviteEmail(e.target.value)}
                       placeholder="friend@example.com"
                       className="flex-1 p-3 bg-black bg-opacity-50 border border-gray-600 rounded-xl text-white focus:border-yellow-400 transition-colors"
+                      disabled={isInviting}
                     />
                     <button
-                      onClick={() => alert('Email invite sent!')}
-                      className="px-4 py-3 gradient-gold text-black font-bold rounded-xl hover:scale-105 transform transition-all"
+                      onClick={sendInvite}
+                      disabled={isInviting || !inviteEmail.trim()}
+                      className={`px-4 py-3 font-bold rounded-xl transition-all ${
+                        isInviting || !inviteEmail.trim()
+                          ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                          : 'gradient-gold text-black hover:scale-105 transform'
+                      }`}
                     >
-                      Send
+                      {isInviting ? 'Sending...' : 'Send'}
                     </button>
                   </div>
                 </div>

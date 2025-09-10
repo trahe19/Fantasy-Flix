@@ -89,6 +89,91 @@ export async function sendConfirmationEmail(data: EmailConfirmationData): Promis
   }
 }
 
+export interface LeagueInviteData {
+  email: string
+  leagueId: string
+  leagueName: string
+  inviterName: string
+}
+
+export async function sendLeagueInviteEmail(data: LeagueInviteData): Promise<boolean> {
+  try {
+    // For development, if no API key is set or resend is not available, just log the email
+    if (!process.env.RESEND_API_KEY || !resend) {
+      console.log('📧 League Invitation (Development Mode)')
+      console.log('To:', data.email)
+      console.log('League:', data.leagueName)
+      console.log('Invited by:', data.inviterName)
+      console.log('Join URL:', `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}?invite=${data.leagueId}`)
+      console.log('Click the link above to join the league')
+      return true
+    }
+
+    const joinUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}?invite=${data.leagueId}`
+    
+    await resend.emails.send({
+      from: 'Fantasy Flix <noreply@fantasyflix.com>',
+      to: [data.email],
+      subject: `${data.inviterName} invited you to join "${data.leagueName}" on Fantasy Flix!`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 30px; text-align: center;">
+            <h1 style="margin: 0; font-size: 32px;">🎬 Fantasy Flix</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">The Ultimate Movie Fantasy League</p>
+          </div>
+          
+          <div style="padding: 40px 30px; background: #f8fafc;">
+            <h2 style="color: #1e293b; margin-top: 0;">You've been invited to join a league! 🏆</h2>
+            
+            <p style="color: #475569; font-size: 16px; line-height: 1.6;">
+              <strong>${data.inviterName}</strong> has invited you to join <strong>"${data.leagueName}"</strong> 
+              on Fantasy Flix - the most exciting fantasy movie league experience!
+            </p>
+            
+            <p style="color: #475569; font-size: 16px; line-height: 1.6;">
+              Draft your favorite movies, compete with friends, and see who can pick the biggest box office winners. 
+              Are you ready to build the ultimate movie roster?
+            </p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${joinUrl}" 
+                 style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); 
+                        color: white; 
+                        padding: 15px 30px; 
+                        text-decoration: none; 
+                        border-radius: 8px; 
+                        font-weight: bold; 
+                        font-size: 16px;
+                        display: inline-block;
+                        box-shadow: 0 4px 6px rgba(245, 158, 11, 0.3);">
+                Join "${data.leagueName}"
+              </a>
+            </div>
+            
+            <p style="color: #64748b; font-size: 14px; margin-top: 30px;">
+              If the button doesn't work, you can also click this link:<br>
+              <a href="${joinUrl}" style="color: #3b82f6; word-break: break-all;">${joinUrl}</a>
+            </p>
+            
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;">
+            
+            <p style="color: #64748b; font-size: 12px; margin: 0;">
+              This invitation was sent by ${data.inviterName} via Fantasy Flix. 
+              If you don't want to join this league, you can safely ignore this email.
+            </p>
+          </div>
+        </div>
+      `
+    })
+
+    console.log('✅ League invitation sent to:', data.email)
+    return true
+  } catch (error) {
+    console.error('❌ Failed to send league invitation:', error)
+    return false
+  }
+}
+
 export function generateConfirmationToken(): string {
   return 'confirm_' + Date.now() + '_' + Math.random().toString(36).substr(2, 16)
 }

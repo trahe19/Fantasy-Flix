@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Fantasy Flix Session</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1f2937;
+            color: white;
+        }
+        .button {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .button:hover {
+            opacity: 0.9;
+        }
+        .success {
+            background: #10b981;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+        .info {
+            background: #374151;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎬 Fantasy Flix - Clear Session</h1>
+    <p>This will clear your current authentication session and reset all local data.</p>
+    
+    <div class="info">
+        <h3>Current Session Status:</h3>
+        <p id="sessionStatus">Checking...</p>
+        <p id="userData">Loading...</p>
+    </div>
+
+    <button class="button" onclick="clearSession()">Clear All Session Data</button>
+    <button class="button" onclick="checkSession()">Check Current Session</button>
+    
+    <div id="success" class="success">
+        ✅ Session cleared successfully! You can now close this tab and refresh your Fantasy Flix page.
+    </div>
+
+    <script>
+        function checkSession() {
+            const currentUser = localStorage.getItem('fantasy-flix-current-user');
+            const users = localStorage.getItem('fantasy-flix-users');
+            const leagues = localStorage.getItem('fantasy-flix-leagues');
+            
+            const statusElement = document.getElementById('sessionStatus');
+            const userDataElement = document.getElementById('userData');
+            
+            if (currentUser) {
+                try {
+                    const user = JSON.parse(currentUser);
+                    statusElement.innerHTML = `<strong style="color: #ef4444;">LOGGED IN</strong> as: ${user.display_name || user.username}`;
+                    userDataElement.innerHTML = `
+                        <strong>User Data Found:</strong><br>
+                        • Current User: ${currentUser ? 'Yes' : 'No'}<br>
+                        • Users Storage: ${users ? JSON.parse(users).length + ' users' : 'None'}<br>
+                        • Leagues Storage: ${leagues ? JSON.parse(leagues).length + ' leagues' : 'None'}
+                    `;
+                } catch (e) {
+                    statusElement.innerHTML = '<strong style="color: #ef4444;">CORRUPTED SESSION DATA</strong>';
+                    userDataElement.innerHTML = 'Session data is corrupted and should be cleared.';
+                }
+            } else {
+                statusElement.innerHTML = '<strong style="color: #10b981;">NOT LOGGED IN</strong> (Clean session)';
+                userDataElement.innerHTML = `
+                    <strong>Storage Status:</strong><br>
+                    • Current User: None<br>
+                    • Users Storage: ${users ? JSON.parse(users).length + ' demo users' : 'None'}<br>
+                    • Leagues Storage: ${leagues ? JSON.parse(leagues).length + ' leagues' : 'None'}
+                `;
+            }
+        }
+        
+        function clearSession() {
+            // Clear all Fantasy Flix localStorage data
+            localStorage.removeItem('fantasy-flix-current-user');
+            localStorage.removeItem('fantasy-flix-users');
+            localStorage.removeItem('fantasy-flix-leagues');
+            
+            // Also clear any other potential auth-related items
+            for (let i = localStorage.length - 1; i >= 0; i--) {
+                const key = localStorage.key(i);
+                if (key && key.includes('fantasy-flix')) {
+                    localStorage.removeItem(key);
+                }
+            }
+            
+            document.getElementById('success').style.display = 'block';
+            checkSession(); // Refresh the status display
+            
+            console.log('✅ Fantasy Flix session cleared successfully!');
+        }
+        
+        // Check session on page load
+        checkSession();
+    </script>
+</body>
+</html>

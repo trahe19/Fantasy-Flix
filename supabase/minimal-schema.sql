@@ -1,5 +1,5 @@
--- Fantasy Flix Database Schema
--- Run this in your Supabase SQL Editor to create all tables
+-- Minimal Fantasy Flix Database Schema - Just the essentials
+-- This version avoids all trigger conflicts
 
 -- Enable RLS (Row Level Security)
 ALTER DEFAULT PRIVILEGES REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
@@ -132,43 +132,16 @@ CREATE INDEX IF NOT EXISTS idx_rosters_league_id ON rosters(league_id);
 CREATE INDEX IF NOT EXISTS idx_movies_release_date ON movies(release_date);
 CREATE INDEX IF NOT EXISTS idx_scoring_history_date ON scoring_history(scoring_date);
 
--- Create updated_at trigger function (if it doesn't exist)
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
-
--- Note: Triggers are already created - skipping to avoid conflicts
--- The updated_at columns will be managed by the application code
-
--- Insert sample data
-INSERT INTO users (email, username, display_name, total_earnings, total_leagues, championships) VALUES 
-('demo@fantasyflix.com', 'boxofficelegend', 'BoxOfficeLegend', 25420.50, 8, 3),
-('sarah@example.com', 'moviemogul', 'Sarah M', 18950.25, 5, 1),
-('mike@example.com', 'filmfanatic', 'Mike Chen', 12300.75, 4, 0),
-('emma@example.com', 'cinemaqueen', 'Emma Rodriguez', 31200.00, 12, 5),
-('alex@example.com', 'blockbusterbro', 'Alex Thompson', 8750.50, 3, 0)
-ON CONFLICT (email) DO NOTHING;
-
 -- Insert sample movies (current popular films)
 INSERT INTO movies (id, title, release_date, poster_path, overview, vote_average, popularity) VALUES 
 (912649, 'Venom: The Last Dance', '2024-10-22', '/aosm8NMQ3UyoBVpSxyimorCQykC.jpg', 'Eddie and Venom are on the run.', 6.8, 3876.433),
 (533535, 'Deadpool & Wolverine', '2024-07-24', '/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg', 'A listless Wade Wilson toils away in civilian life.', 7.7, 2845.123),
 (558449, 'Gladiator II', '2024-11-13', '/2cxhvwyEwRlysAmRH4iodkvo0z5.jpg', 'Years after witnessing the death of the revered hero Maximus.', 6.8, 2543.876),
 (402431, 'Wicked', '2024-11-20', '/c5Tqxeo1UpBvnAc3csUm7j3hlQl.jpg', 'Elphaba and Glinda become extremely unlikely friends.', 8.6, 3456.789),
-(1241982, 'Moana 2', '2024-11-27', '/yh64qw9mgXBvlaWDi7Q9tpUBAvH.jpg', 'Moana journeys alongside Maui and a new crew.', 7.0, 4567.890)
+(1241982, 'Moana 2', '2024-11-27', '/yh64qw9mgXBvlaWDi7Q9tpUBAvH4iodkvo0z5.jpg', 'Moana journeys alongside Maui and a new crew.', 7.0, 4567.890)
 ON CONFLICT (id) DO NOTHING;
 
--- Enable Row Level Security (optional - for production)
--- ALTER TABLE users ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE leagues ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE league_members ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE rosters ENABLE ROW LEVEL SECURITY;
-
--- Grant permissions for anon users (adjust as needed)
+-- Grant permissions
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
 GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated;
