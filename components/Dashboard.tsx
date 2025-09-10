@@ -195,7 +195,7 @@ const Dashboard = memo(function Dashboard() {
       ) : null}
 
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-4xl font-black bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent">Your Leagues</h2>
+        <h2 className="text-4xl font-black bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent leading-tight py-2">Your Leagues</h2>
         <div className="space-x-4">
           <button 
             onClick={() => setShowBrowseLeagues(true)}
@@ -249,7 +249,7 @@ const Dashboard = memo(function Dashboard() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
           </div>
-          <h3 className="text-4xl font-black text-white mb-4 bg-gradient-to-r from-amber-300 to-yellow-300 bg-clip-text text-transparent">No Leagues Yet</h3>
+          <h3 className="text-4xl font-black text-white mb-4 bg-gradient-to-r from-amber-300 to-yellow-300 bg-clip-text text-transparent leading-tight py-2">No Leagues Yet</h3>
           <p className="text-white/70 text-lg mb-8 max-w-md mx-auto">Head to "My Leagues" to create your first league and start your cinematic journey!</p>
         </div>
       )}
@@ -257,7 +257,7 @@ const Dashboard = memo(function Dashboard() {
       {/* Biggest Upcoming Movies - Next 30 Days */}
       <div className="mb-12">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-4xl font-black bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent">Biggest Upcoming Movies</h2>
+          <h2 className="text-4xl font-black bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent leading-tight py-2">Biggest Upcoming Movies</h2>
           <span className="text-sm text-amber-400 font-medium bg-black/30 px-4 py-2 rounded-xl backdrop-blur-sm border border-amber-500/20">Next 30 Days • Most Anticipated</span>
         </div>
         
@@ -299,9 +299,9 @@ const Dashboard = memo(function Dashboard() {
           )}
         </div>
 
-        {/* 2025-2026 Movies Section */}
+        {/* Hottest Movies Out Now Section */}
         <div className="mb-6">
-          <h3 className="text-2xl font-black text-white mb-6 bg-gradient-to-r from-red-400 to-red-300 bg-clip-text text-transparent">2025-2026 Movies</h3>
+          <h3 className="text-2xl font-black text-white mb-6 bg-gradient-to-r from-red-400 to-red-300 bg-clip-text text-transparent leading-tight py-1">Hottest Movies Out Now</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {isLoadingMovies ? (
               [...Array(3)].map((_, i) => (
@@ -317,7 +317,7 @@ const Dashboard = memo(function Dashboard() {
                 </div>
               ))
             ) : (
-              movies2025.slice(0, 3).map((movie) => (
+              upcomingMovies.slice(0, 3).map((movie) => (
                 <div
                   key={movie.id}
                   className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-xl rounded-2xl p-6 hover:shadow-amber-500/20 transition-all cursor-pointer border border-amber-500/10 hover:border-amber-500/30 shadow-xl"
@@ -337,7 +337,7 @@ const Dashboard = memo(function Dashboard() {
                       <p className="text-gray-400 text-xs mb-2 line-clamp-2">{movie.overview}</p>
                       <div className="flex items-center space-x-3 text-xs">
                         <span className="text-yellow-400">{movie.vote_average.toFixed(1)}/10</span>
-                        <span className="text-blue-400">{new Date(movie.release_date).toLocaleDateString()}</span>
+                        <span className="text-red-400">🔥 Now Playing</span>
                         {movie.revenue && movie.revenue > 0 && (
                           <span className="text-green-400">{formatCurrency(movie.revenue)}</span>
                         )}
@@ -352,61 +352,83 @@ const Dashboard = memo(function Dashboard() {
       </div>
 
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Live Activity Feed - Only show if there are leagues */}
-        {userLeagues.length > 0 ? (
-          <ActivityFeed
-            activities={[]} // Empty until real activity exists
-            showFilters={true}
-            maxItems={8}
-          />
-        ) : (
-          <div className="glass-elegant rounded-xl p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white">Live Activity</h3>
-            </div>
-            <div className="text-center py-8">
-              <div className="w-12 h-12 mx-auto mb-4 bg-slate-700 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+      {/* Fantasy Flix News Section */}
+      <div className="mb-12">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-4xl font-black bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent leading-tight py-2">Fantasy Flix News</h2>
+          <span className="text-sm text-amber-400 font-medium bg-black/30 px-4 py-2 rounded-xl backdrop-blur-sm border border-amber-500/20">Latest Updates</span>
+        </div>
+        
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Featured Article */}
+          <div className="bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl rounded-3xl p-8 border border-amber-500/20 shadow-2xl hover:shadow-amber-500/10 transition-all duration-300">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 0v1.93a2 2 0 00.78 1.58l4.44 3.67A2 2 0 0118 15.93V18a2 2 0 11-4 0v-2.07a2 2 0 00-.78-1.58L9.78 10.68A2 2 0 018 9.1V6a2 2 0 112 0v2z" />
                 </svg>
               </div>
-              <p className="text-gray-400 text-sm">Join a league to see live activity!</p>
+              <span className="text-red-400 font-bold text-sm">TRENDING</span>
+              <span className="text-gray-500">•</span>
+              <span className="text-gray-400 text-sm">2 hours ago</span>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-4">Box Office Predictions: Horror Movies Dominating Fall Season</h3>
+            <p className="text-gray-300 mb-6 leading-relaxed">
+              With October around the corner, horror films are expected to drive massive box office numbers. Our analysis shows that fantasy league players should focus on psychological thrillers and supernatural horror for maximum returns.
+            </p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full flex items-center justify-center">
+                  <span className="text-black font-bold text-sm">FF</span>
+                </div>
+                <span className="text-gray-400 text-sm">Fantasy Flix Editorial</span>
+              </div>
+              <button className="text-amber-400 hover:text-amber-300 text-sm font-medium">Read More →</button>
             </div>
           </div>
-        )}
 
-        {/* League Standings - Only show if there are leagues */}
-        {userLeagues.length > 0 ? (
-          <div className="glass-elegant rounded-xl p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white">League Standings</h3>
-              <span className="text-sm text-slate-400">Current Season</span>
-            </div>
-            <div className="text-center py-8">
-              <div className="w-12 h-12 mx-auto mb-4 bg-slate-700 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
+          {/* News Articles Grid */}
+          <div className="space-y-4">
+            <div className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-xl rounded-2xl p-6 border border-amber-500/10 hover:border-amber-500/30 transition-all duration-300">
+              <div className="flex items-center space-x-2 mb-3">
+                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                <span className="text-blue-400 text-sm font-medium">STRATEGY</span>
+                <span className="text-gray-500">•</span>
+                <span className="text-gray-400 text-sm">4 hours ago</span>
               </div>
-              <p className="text-gray-400 text-sm">Draft your roster to see standings!</p>
+              <h4 className="text-white font-bold mb-2">Budget vs. Blockbuster: Finding Hidden Gems</h4>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Learn how to identify low-budget films that could become surprise hits and boost your fantasy league score.
+              </p>
+            </div>
+
+            <div className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-xl rounded-2xl p-6 border border-amber-500/10 hover:border-amber-500/30 transition-all duration-300">
+              <div className="flex items-center space-x-2 mb-3">
+                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                <span className="text-green-400 text-sm font-medium">INDUSTRY</span>
+                <span className="text-gray-500">•</span>
+                <span className="text-gray-400 text-sm">6 hours ago</span>
+              </div>
+              <h4 className="text-white font-bold mb-2">Streaming vs. Theatrical: Impact on Fantasy Scoring</h4>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                How the hybrid release model affects box office performance and what it means for your fantasy picks.
+              </p>
+            </div>
+
+            <div className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-xl rounded-2xl p-6 border border-amber-500/10 hover:border-amber-500/30 transition-all duration-300">
+              <div className="flex items-center space-x-2 mb-3">
+                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                <span className="text-purple-400 text-sm font-medium">ANALYSIS</span>
+                <span className="text-gray-500">•</span>
+                <span className="text-gray-400 text-sm">1 day ago</span>
+              </div>
+              <h4 className="text-white font-bold mb-2">International Markets: The New Frontier</h4>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Why global box office numbers are becoming increasingly important for fantasy league success.
+              </p>
             </div>
           </div>
-        ) : (
-          <div className="glass-elegant rounded-xl p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white">League Standings</h3>
-            </div>
-            <div className="text-center py-8">
-              <div className="w-12 h-12 mx-auto mb-4 bg-slate-700 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <p className="text-gray-400 text-sm">Set up a league to start!</p>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
 
 

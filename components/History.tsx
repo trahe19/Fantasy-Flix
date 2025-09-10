@@ -4,179 +4,39 @@ import { memo } from 'react'
 
 const History = memo(function History() {
   return (
-    <div className="px-4 py-6">
-      {/* Hero Section */}
-      <div className="text-center mb-12">
-        <h1 className="text-5xl font-black text-gradient mb-4">
-          The Fantasy Flix Legacy
-        </h1>
-        <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
-          From humble beginnings to the world's premier fantasy movie platform
-        </p>
-      </div>
-
-      {/* Timeline Container */}
-      <div className="max-w-6xl mx-auto">
-        {/* Timeline Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-white mb-4">Our Journey</h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-cyan-400 mx-auto rounded-full"></div>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Cinematic Background */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-20"
+        style={{
+          backgroundImage: 'url(/images/hero-background.png)',
+          filter: 'brightness(0.3)'
+        }}
+      />
+      <div className="fixed inset-0 bg-gradient-to-b from-black/80 via-black/90 to-black" />
+      
+      <div className="relative z-10 px-4 py-6">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-black bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent leading-tight py-2 mb-4">
+            🎬 History Coming Soon
+          </h1>
+          <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
+            The complete Fantasy Flix story will be available soon
+          </p>
         </div>
 
-        {/* Timeline Items */}
-        <div className="space-y-12">
-          {/* 2021 - The Beginning */}
-          <div className="glass-dark rounded-2xl p-8 transform hover:scale-102 transition-all duration-300">
-            <div className="flex items-start space-x-6">
-              <div className="flex-shrink-0">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
-                  <span className="text-2xl font-black text-white">2021</span>
-                </div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-white mb-3">The Founding</h3>
-                <p className="text-gray-300 leading-relaxed mb-4">
-                  [Placeholder: Add founding story details here]
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-blue-500 bg-opacity-20 text-blue-300 rounded-full text-sm">
-                    Concept
-                  </span>
-                  <span className="px-3 py-1 bg-cyan-500 bg-opacity-20 text-cyan-300 rounded-full text-sm">
-                    Development
-                  </span>
-                </div>
-              </div>
+        {/* Placeholder Content */}
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl rounded-3xl p-12 border border-amber-500/20 shadow-2xl">
+            <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl flex items-center justify-center shadow-2xl border border-white/10">
+              <svg className="w-10 h-10 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </div>
-          </div>
-
-          {/* 2022 - Launch */}
-          <div className="glass-dark rounded-2xl p-8 transform hover:scale-102 transition-all duration-300">
-            <div className="flex items-start space-x-6">
-              <div className="flex-shrink-0">
-                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
-                  <span className="text-2xl font-black text-white">2022</span>
-                </div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-white mb-3">The Launch</h3>
-                <p className="text-gray-300 leading-relaxed mb-4">
-                  [Placeholder: Add launch details here]
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-green-500 bg-opacity-20 text-green-300 rounded-full text-sm">
-                    Beta Launch
-                  </span>
-                  <span className="px-3 py-1 bg-emerald-500 bg-opacity-20 text-emerald-300 rounded-full text-sm">
-                    First Users
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* 2023 - Growth */}
-          <div className="glass-dark rounded-2xl p-8 transform hover:scale-102 transition-all duration-300">
-            <div className="flex items-start space-x-6">
-              <div className="flex-shrink-0">
-                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-2xl font-black text-white">2023</span>
-                </div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-white mb-3">Rapid Growth</h3>
-                <p className="text-gray-300 leading-relaxed mb-4">
-                  [Placeholder: Add growth milestones here]
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-purple-500 bg-opacity-20 text-purple-300 rounded-full text-sm">
-                    10K Users
-                  </span>
-                  <span className="px-3 py-1 bg-pink-500 bg-opacity-20 text-pink-300 rounded-full text-sm">
-                    Mobile App
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* 2024 - Expansion */}
-          <div className="glass-dark rounded-2xl p-8 transform hover:scale-102 transition-all duration-300">
-            <div className="flex items-start space-x-6">
-              <div className="flex-shrink-0">
-                <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-2xl font-black text-white">2024</span>
-                </div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-white mb-3">Global Expansion</h3>
-                <p className="text-gray-300 leading-relaxed mb-4">
-                  [Placeholder: Add expansion details here]
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-orange-500 bg-opacity-20 text-orange-300 rounded-full text-sm">
-                    International
-                  </span>
-                  <span className="px-3 py-1 bg-red-500 bg-opacity-20 text-red-300 rounded-full text-sm">
-                    50K Users
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* 2025 - Present */}
-          <div className="glass-dark rounded-2xl p-8 transform hover:scale-102 transition-all duration-300 border-2 border-gradient-to-r from-blue-400 to-cyan-400">
-            <div className="flex items-start space-x-6">
-              <div className="flex-shrink-0">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full flex items-center justify-center">
-                  <span className="text-2xl font-black text-white">2025</span>
-                </div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-white mb-3">The Elite Era</h3>
-                <p className="text-gray-300 leading-relaxed mb-4">
-                  [Placeholder: Add current achievements here]
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-blue-400 bg-opacity-20 text-blue-300 rounded-full text-sm">
-                    Premium Platform
-                  </span>
-                  <span className="px-3 py-1 bg-cyan-400 bg-opacity-20 text-cyan-300 rounded-full text-sm">
-                    Elite Community
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Stats Section */}
-        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div className="glass-dark rounded-xl p-6 text-center">
-            <div className="text-3xl font-black text-blue-400 mb-2">100K+</div>
-            <div className="text-gray-300">Active Players</div>
-          </div>
-          <div className="glass-dark rounded-xl p-6 text-center">
-            <div className="text-3xl font-black text-cyan-400 mb-2">$5M+</div>
-            <div className="text-gray-300">Prizes Awarded</div>
-          </div>
-          <div className="glass-dark rounded-xl p-6 text-center">
-            <div className="text-3xl font-black text-green-400 mb-2">500+</div>
-            <div className="text-gray-300">Movie Leagues</div>
-          </div>
-          <div className="glass-dark rounded-xl p-6 text-center">
-            <div className="text-3xl font-black text-yellow-400 mb-2">24/7</div>
-            <div className="text-gray-300">Global Access</div>
-          </div>
-        </div>
-
-        {/* Vision Section */}
-        <div className="mt-16 text-center">
-          <div className="glass-dark rounded-2xl p-12">
-            <h3 className="text-3xl font-bold text-white mb-6">Looking Forward</h3>
-            <p className="text-xl text-gray-300 leading-relaxed max-w-4xl mx-auto">
-              [Placeholder: Add vision and future plans here]
+            <h3 className="text-3xl font-bold text-white mb-4">Under Construction</h3>
+            <p className="text-gray-400 text-lg mb-6">
+              We're crafting an amazing timeline of Fantasy Flix's journey. Check back soon for the full story!
             </p>
           </div>
         </div>

@@ -56,7 +56,7 @@ const RosterManager = ({ leagueId, currentUser, currentPeriod, roster, onRosterM
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-black/80 via-black/90 to-black">
       {/* Hollywood Background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full opacity-8 animate-float" />
@@ -70,19 +70,27 @@ const RosterManager = ({ leagueId, currentUser, currentPeriod, roster, onRosterM
           {/* Header */}
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-4xl font-black text-gradient-premium mb-2">🎬 My Roster</h1>
+              <h1 className="text-4xl font-black bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent leading-tight py-2 mb-2">🎬 My Roster</h1>
               <div className="flex items-center space-x-4">
                 <span className="text-gray-400">Period {viewPeriod} • {starters.length}/5 Starters • {reserves.length}/5 Reserves</span>
                 <div className="flex space-x-2">
                   <button
                     onClick={() => setViewPeriod(1)}
-                    className={`px-3 py-1 rounded-lg font-medium ${viewPeriod === 1 ? 'gradient-premium text-white' : 'glass text-gray-300'}`}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                      viewPeriod === 1
+                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
+                        : 'bg-black/30 backdrop-blur-sm border border-white/20 text-white hover:scale-105 transform'
+                    }`}
                   >
                     Period 1
                   </button>
                   <button
                     onClick={() => setViewPeriod(2)}
-                    className={`px-3 py-1 rounded-lg font-medium ${viewPeriod === 2 ? 'gradient-premium text-white' : 'glass text-gray-300'}`}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                      viewPeriod === 2
+                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
+                        : 'bg-black/30 backdrop-blur-sm border border-white/20 text-white hover:scale-105 transform'
+                    }`}
                   >
                     Period 2
                   </button>
@@ -93,7 +101,7 @@ const RosterManager = ({ leagueId, currentUser, currentPeriod, roster, onRosterM
             {/* Score Summary */}
             <div className="text-right">
               <p className="text-sm text-gray-400">Period {viewPeriod} Score</p>
-              <p className="text-3xl font-black text-gradient-gold">{formatScore(totalScore)}</p>
+              <p className="text-3xl font-black bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">{formatScore(totalScore)}</p>
               <div className="flex space-x-4 text-xs mt-1">
                 <span className="text-green-400">Starters: {formatScore(startersScore)}</span>
                 <span className="text-blue-400">Reserves: {formatScore(reservesScore)}</span>
@@ -106,9 +114,9 @@ const RosterManager = ({ leagueId, currentUser, currentPeriod, roster, onRosterM
               
               {/* Starters Section */}
               <div className="col-span-8">
-                <div className="glass-elegant rounded-3xl p-6 border border-yellow-400 border-opacity-30">
+                <div className="bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl rounded-3xl p-6 border border-amber-500/20 shadow-2xl">
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold text-gradient-premium flex items-center space-x-2">
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-600 bg-clip-text text-transparent flex items-center space-x-2">
                       <span>⭐</span>
                       <span>Starting Lineup</span>
                     </h2>
@@ -181,7 +189,7 @@ const RosterManager = ({ leagueId, currentUser, currentPeriod, roster, onRosterM
                                             e.stopPropagation()
                                             onStarterChange(slot.movieId, false)
                                           }}
-                                          className="text-xs glass border border-gray-500 px-3 py-1 rounded-lg text-gray-300 hover:text-white"
+                                          className="text-xs bg-black/30 backdrop-blur-sm border border-white/20 px-3 py-1 rounded-lg text-gray-300 hover:text-white transition-all duration-200"
                                         >
                                           Move to Reserves
                                         </button>
@@ -192,7 +200,7 @@ const RosterManager = ({ leagueId, currentUser, currentPeriod, roster, onRosterM
                                   <div className="text-right">
                                     {slot.totalScore ? (
                                       <div>
-                                        <p className="font-bold text-xl text-gradient-gold">{formatScore(slot.totalScore)}</p>
+                                        <p className="font-bold text-xl bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">{formatScore(slot.totalScore)}</p>
                                         <div className="text-xs space-y-1">
                                           {slot.baseScore && <p className="text-gray-300">Base: {formatScore(slot.baseScore)}</p>}
                                           {slot.bonusScore && <p className="text-yellow-400">Bonus: +{formatScore(slot.bonusScore)}</p>}
@@ -223,7 +231,7 @@ const RosterManager = ({ leagueId, currentUser, currentPeriod, roster, onRosterM
 
               {/* Reserves Section */}
               <div className="col-span-4">
-                <div className="glass-elegant rounded-3xl p-6">
+                <div className="bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl rounded-3xl p-6 border border-amber-500/20 shadow-2xl">
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-xl font-bold text-white flex items-center space-x-2">
                       <span>🪑</span>
@@ -285,7 +293,7 @@ const RosterManager = ({ leagueId, currentUser, currentPeriod, roster, onRosterM
                                             e.stopPropagation()
                                             onStarterChange(slot.movieId, true)
                                           }}
-                                          className="text-xs gradient-blue px-2 py-1 rounded text-white hover:opacity-80"
+                                          className="text-xs bg-gradient-to-r from-blue-500 to-blue-600 px-2 py-1 rounded text-white hover:scale-105 transform transition-all duration-200"
                                         >
                                           Start
                                         </button>
@@ -315,7 +323,7 @@ const RosterManager = ({ leagueId, currentUser, currentPeriod, roster, onRosterM
 
           {/* Selected Movie Detail Panel */}
           {selectedMovie && (
-            <div className="fixed bottom-4 right-4 glass-elegant rounded-2xl p-4 w-80 border border-yellow-400 border-opacity-30 shadow-2xl">
+            <div className="fixed bottom-4 right-4 bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl rounded-2xl p-4 w-80 border border-amber-500/20 shadow-2xl">
               <div className="flex justify-between items-start mb-3">
                 <h3 className="font-bold text-yellow-400">🎬 {selectedMovie.movie.title}</h3>
                 <button
@@ -350,7 +358,7 @@ const RosterManager = ({ leagueId, currentUser, currentPeriod, roster, onRosterM
                 
                 {selectedMovie.totalScore && (
                   <div className="bg-black bg-opacity-40 rounded-lg p-3 mt-3">
-                    <p className="text-gradient-gold font-bold text-lg">{formatScore(selectedMovie.totalScore)}</p>
+                    <p className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent font-bold text-lg">{formatScore(selectedMovie.totalScore)}</p>
                     {selectedMovie.baseScore && (
                       <p className="text-xs text-gray-300">Base: {formatScore(selectedMovie.baseScore)}</p>
                     )}

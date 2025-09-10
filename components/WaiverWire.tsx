@@ -107,7 +107,7 @@ const WaiverWire = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'u
   }
 
   return (
-    <div className="px-4 py-6 relative">
+    <div className="px-4 py-6 relative min-h-screen bg-gradient-to-b from-black/80 via-black/90 to-black">
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float-slow"></div>
@@ -116,10 +116,10 @@ const WaiverWire = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'u
       </div>
 
       {/* Header */}
-      <div className="glass-dark rounded-2xl p-6 mb-6 relative z-10">
+      <div className="bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl rounded-3xl p-6 mb-6 relative z-10 border border-amber-500/20 shadow-2xl">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-black text-gradient mb-2">🎬 Hollywood Waiver Wire</h1>
+            <h1 className="text-3xl font-black bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent leading-tight py-1 mb-2">🎬 Hollywood Waiver Wire</h1>
             <p className="text-gray-300">First-Come, First-Served • Period {currentPeriod} Active</p>
           </div>
           <div className="flex space-x-2">
@@ -133,8 +133,8 @@ const WaiverWire = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'u
                 onClick={() => setFilter(key as any)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   filter === key
-                    ? 'gradient-blue text-white shadow-lg card-glow'
-                    : 'glass hover:scale-105 transform'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
+                    : 'bg-black/30 backdrop-blur-sm border border-white/20 text-white hover:scale-105 transform'
                 }`}
               >
                 {label}

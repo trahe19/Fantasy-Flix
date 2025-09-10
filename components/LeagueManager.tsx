@@ -197,7 +197,7 @@ const LeagueManager = () => {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-black/80 via-black/90 to-black">
       {/* Hollywood Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-10 left-10 w-64 h-64 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full opacity-10 animate-pulse" style={{ animationDuration: '4s' }} />
@@ -217,7 +217,7 @@ const LeagueManager = () => {
       <div className="relative z-10 px-4 py-6">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-black text-gradient mb-4">🎬 My Epic Leagues</h1>
+          <h1 className="text-5xl font-black bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent leading-tight py-2 mb-4">🎬 My Epic Leagues</h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
             Manage your fantasy movie empire. Create leagues, draft blockbusters, and dominate the box office!
           </p>
@@ -227,7 +227,7 @@ const LeagueManager = () => {
         <div className="text-center mb-8">
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-8 py-4 gradient-blue text-white font-black text-lg rounded-2xl hover:scale-110 transform transition-all duration-300 shadow-2xl animate-bounce-slow"
+            className="px-8 py-4 bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-black text-lg rounded-2xl hover:scale-110 transform transition-all duration-300 shadow-2xl animate-bounce-slow"
           >
             🎭 Create New League
           </button>
@@ -237,7 +237,7 @@ const LeagueManager = () => {
         {leagues.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {leagues.map((league, index) => (
-              <div key={league.id || index} className="glass-elegant p-6 rounded-2xl hover:card-glow transition-all duration-300">
+              <div key={league.id || index} className="bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl p-6 rounded-3xl border border-amber-500/20 shadow-2xl hover:shadow-amber-500/10 transition-all duration-300">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-bold text-white">{league.name}</h3>
                   <span className={`px-3 py-1 rounded-full text-xs font-bold ${
@@ -267,20 +267,20 @@ const LeagueManager = () => {
                 <div className="mt-6 flex space-x-2">
                   <button 
                     onClick={() => handleEnterLeague(league)}
-                    className="flex-1 py-2 gradient-blue text-white font-medium rounded-xl hover:scale-105 transform transition-all"
+                    className="flex-1 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-xl hover:scale-105 transform transition-all"
                   >
                     Enter League
                   </button>
                   <button 
                     onClick={() => handleLeagueSettings(league)}
-                    className="px-4 py-2 glass rounded-xl text-white hover:scale-105 transform transition-all"
+                    className="px-4 py-2 bg-black/30 backdrop-blur-sm border border-white/20 rounded-xl text-white hover:scale-105 transform transition-all"
                     title="League Settings"
                   >
                     ⚙️
                   </button>
                   <button 
                     onClick={() => handleInvitePlayers(league)}
-                    className="px-4 py-2 gradient-gold text-black font-medium rounded-xl hover:scale-105 transform transition-all"
+                    className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-medium rounded-xl hover:scale-105 transform transition-all"
                     title="Invite Players"
                   >
                     👥

@@ -44,19 +44,19 @@ const UserDashboard = ({ user, onLogout }: UserDashboardProps) => {
       {/* Premium Navigation */}
       <nav className="relative z-50 bg-gradient-to-r from-black/95 via-gray-900/95 to-black/95 backdrop-blur-xl border-b border-amber-500/20 shadow-2xl sticky top-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
+          <div className="flex justify-between h-20">
             <div className="flex items-center space-x-8">
               <div className="flex items-center space-x-3">
                 <img 
                   src="/images/logo.png" 
                   alt="Fantasy Flix" 
-                  className="w-10 h-10 animate-pulse object-contain"
+                  className="w-20 h-20 animate-pulse object-contain"
                   style={{
                     filter: 'drop-shadow(0 0 20px rgba(251, 191, 36, 0.3))',
                     aspectRatio: '1/1'
                   }}
                 />
-                <h1 className="text-2xl font-black bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent">
+                <h1 className="text-2xl font-black bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent leading-tight py-1">
                   Fantasy Flix
                 </h1>
               </div>
@@ -165,7 +165,7 @@ const UserDashboard = ({ user, onLogout }: UserDashboardProps) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h2 className="text-4xl font-black text-white mb-4 bg-gradient-to-r from-amber-300 to-yellow-300 bg-clip-text text-transparent">No Active Drafts</h2>
+            <h2 className="text-4xl font-black text-white mb-4 bg-gradient-to-r from-amber-300 to-yellow-300 bg-clip-text text-transparent leading-tight py-2">No Active Drafts</h2>
             <p className="text-white/70 text-lg mb-8 max-w-md mx-auto">Draft rooms will appear here when leagues start drafting. The real action begins soon.</p>
             <button 
               onClick={() => setCurrentView('dashboard')}
