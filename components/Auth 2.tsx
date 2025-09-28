@@ -118,7 +118,7 @@ const Auth = ({ onLogin, onBack, defaultMode = 'login' }: AuthProps) => {
             <img 
               src="/images/logo.png" 
               alt="Fantasy Flix" 
-              className="w-20 h-20 mx-auto mb-6 animate-pulse drop-shadow-2xl object-contain"
+              className="w-40 h-40 mx-auto mb-6 animate-pulse drop-shadow-2xl object-contain"
               style={{
                 filter: 'drop-shadow(0 0 30px rgba(251, 191, 36, 0.3))',
                 aspectRatio: '1/1'

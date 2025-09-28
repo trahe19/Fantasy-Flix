@@ -8,6 +8,10 @@ export async function testSupabaseConnection() {
     console.log('Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
     
     // Test basic auth connection (doesn't require tables)
+    if (!supabase) {
+      console.log('Supabase client not configured - using placeholder values')
+      return false
+    }
     const { data, error } = await supabase.auth.getSession()
     
     console.log('Connection test result:', { data, error })

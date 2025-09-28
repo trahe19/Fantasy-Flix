@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMDB Poster Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: white;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .poster {
+            max-width: 300px;
+            border: 2px solid #444;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .url {
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            word-break: break-all;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TMDB Poster Test</h1>
+        <h2>Spider-Man: No Way Home</h2>
+        
+        <div class="url">
+            <strong>TMDB Poster URL:</strong><br>
+            https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg
+        </div>
+
+        <img 
+            src="https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg" 
+            alt="Spider-Man: No Way Home Poster"
+            class="poster"
+            onload="console.log('✅ Poster loaded successfully!')"
+            onerror="console.log('❌ Poster failed to load'); this.style.border='2px solid red';"
+        >
+
+        <p>If you see the Spider-Man poster above, TMDB images are working!</p>
+        <p><em>Check your browser's console (F12) for load status.</em></p>
+    </div>
+</body>
+</html>

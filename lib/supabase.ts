@@ -1,9 +1,10 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Create client with placeholder values for development
+export const supabase = supabaseUrl.includes('placeholder') ? null : createClient(supabaseUrl, supabaseAnonKey)
 
 // Database Types
 export interface User {
@@ -73,6 +74,7 @@ export interface Roster {
 export const db = {
   // User operations
   async createUser(user: Omit<User, 'id' | 'created_at' | 'updated_at'>) {
+    if (!supabase) throw new Error('Supabase not configured')
     const { data, error } = await supabase
       .from('users')
       .insert([user])
@@ -84,6 +86,7 @@ export const db = {
   },
 
   async getUser(id: string) {
+    if (!supabase) throw new Error('Supabase not configured')
     const { data, error } = await supabase
       .from('users')
       .select('*')
@@ -96,6 +99,7 @@ export const db = {
 
   // League operations
   async createLeague(league: Omit<League, 'id' | 'created_at' | 'updated_at'>) {
+    if (!supabase) throw new Error('Supabase not configured')
     const { data, error } = await supabase
       .from('leagues')
       .insert([league])
@@ -107,6 +111,7 @@ export const db = {
   },
 
   async getLeagues() {
+    if (!supabase) throw new Error('Supabase not configured')
     const { data, error } = await supabase
       .from('leagues')
       .select('*')
@@ -117,6 +122,7 @@ export const db = {
   },
 
   async joinLeague(leagueId: string, userId: string) {
+    if (!supabase) throw new Error('Supabase not configured')
     const { data, error } = await supabase
       .from('league_members')
       .insert([{ league_id: leagueId, user_id: userId }])
@@ -129,6 +135,7 @@ export const db = {
 
   // Draft operations
   async draftMovie(draft: Omit<Draft, 'id' | 'created_at'>) {
+    if (!supabase) throw new Error('Supabase not configured')
     const { data, error } = await supabase
       .from('drafts')
       .insert([draft])
@@ -140,6 +147,7 @@ export const db = {
   },
 
   async getDrafts(leagueId: string) {
+    if (!supabase) throw new Error('Supabase not configured')
     const { data, error } = await supabase
       .from('drafts')
       .select('*')
@@ -152,6 +160,7 @@ export const db = {
 
   // Roster operations
   async getRoster(userId: string, leagueId: string) {
+    if (!supabase) throw new Error('Supabase not configured')
     const { data, error } = await supabase
       .from('rosters')
       .select(`
@@ -166,6 +175,7 @@ export const db = {
   },
 
   async updateRoster(rosterId: string, updates: Partial<Roster>) {
+    if (!supabase) throw new Error('Supabase not configured')
     const { data, error } = await supabase
       .from('rosters')
       .update(updates)

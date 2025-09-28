@@ -21,7 +21,7 @@ const WaiverWire = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'u
       imdbRating: 8.2,
       boxOfficeData: [],
       genres: ['Action', 'Horror', 'Fantasy'],
-      posterUrl: '/placeholder-movie.jpg',
+      posterUrl: '/placeholder-movie.svg',
       runtime: 118,
       director: 'Mahershala Ali',
       cast: ['Mahershala Ali']
@@ -36,7 +36,7 @@ const WaiverWire = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'u
       imdbRating: 7.8,
       boxOfficeData: [],
       genres: ['Action', 'Adventure', 'Sci-Fi'],
-      posterUrl: '/placeholder-movie.jpg',
+      posterUrl: '/placeholder-movie.svg',
       runtime: 125,
       director: 'Matt Shakman',
       cast: ['Pedro Pascal', 'Vanessa Kirby']
@@ -51,7 +51,7 @@ const WaiverWire = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'u
       imdbRating: 8.0,
       boxOfficeData: [],
       genres: ['Animation', 'Comedy', 'Family'],
-      posterUrl: '/placeholder-movie.jpg',
+      posterUrl: '/placeholder-movie.svg',
       runtime: 95,
       director: 'Walt Dohrn',
       cast: ['Mike Myers', 'Cameron Diaz']
@@ -107,7 +107,7 @@ const WaiverWire = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'u
   }
 
   return (
-    <div className="px-4 py-6 relative min-h-screen bg-gradient-to-b from-black/80 via-black/90 to-black">
+    <div className="px-4 py-6 relative">
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float-slow"></div>
@@ -116,10 +116,10 @@ const WaiverWire = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'u
       </div>
 
       {/* Header */}
-      <div className="bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl rounded-3xl p-6 mb-6 relative z-10 border border-amber-500/20 shadow-2xl">
+      <div className="glass-dark rounded-2xl p-6 mb-6 relative z-10">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-black bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent leading-tight py-1 mb-2">🎬 Hollywood Waiver Wire</h1>
+            <h1 className="text-3xl font-black text-gradient mb-2">🎬 Hollywood Waiver Wire</h1>
             <p className="text-gray-300">First-Come, First-Served • Period {currentPeriod} Active</p>
           </div>
           <div className="flex space-x-2">
@@ -133,8 +133,8 @@ const WaiverWire = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'u
                 onClick={() => setFilter(key as any)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   filter === key
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
-                    : 'bg-black/30 backdrop-blur-sm border border-white/20 text-white hover:scale-105 transform'
+                    ? 'gradient-blue text-white shadow-lg card-glow'
+                    : 'glass hover:scale-105 transform'
                 }`}
               >
                 {label}
@@ -166,11 +166,11 @@ const WaiverWire = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'u
                 {/* Movie Poster */}
                 <div className="aspect-[2/3] relative overflow-hidden rounded-xl mb-4">
                   <img
-                    src={movie.posterUrl || '/placeholder-movie.jpg'}
+                    src={movie.posterUrl || '/placeholder-movie.svg'}
                     alt={movie.title}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      e.currentTarget.src = '/placeholder-movie.jpg'
+                      e.currentTarget.src = '/placeholder-movie.svg'
                     }}
                   />
                   <div className="absolute top-3 right-3">
@@ -200,7 +200,7 @@ const WaiverWire = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'u
                 </div>
                 
                 {/* Movie Info */}
-                <h3 className="text-lg font-black text-white mb-3 line-clamp-2">{movie.title}</h3>
+                <h3 className="text-lg font-black text-white mb-3 drop-shadow-md" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.8)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'}}>{movie.title}</h3>
                 
                 <div className="space-y-2 text-sm mb-4">
                   <div className="flex justify-between items-center">
