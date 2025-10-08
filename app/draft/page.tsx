@@ -421,10 +421,10 @@ const DraftPage = () => {
             <div className="bg-slate-800/80 backdrop-blur-xl rounded-xl p-6 border border-slate-600/50 h-full">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-white">
-                  📊 Draft Board ({movies.length} Movies)
+                  📊 Draft Board ({movies.length} Available Movies)
                 </h3>
                 <div className="text-sm text-gray-400">
-                  Oct 1, 2025 - Jan 15, 2026 Releases
+                  Extended Release Pool • Hundreds of Options
                 </div>
               </div>
 

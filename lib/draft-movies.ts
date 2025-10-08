@@ -153,8 +153,8 @@ export async function getDraftEligibleMovies(leagueId: string = 'sample-league')
       scouting_report: createScoutingReportFromUpcoming(movie)
     }))
     
-    // Sort by draft potential/value
-    return draftMovies.sort((a, b) => {
+    // Sort by draft potential/value and return ALL movies (no artificial limits)
+    const sortedMovies = draftMovies.sort((a, b) => {
       const aScore = (a.domestic_projection * 0.4) + 
                      (a.oscar_potential.score * 1000000 * 0.25) +
                      (a.franchise_strength.score * 1000000 * 0.2) +
@@ -167,6 +167,9 @@ export async function getDraftEligibleMovies(leagueId: string = 'sample-league')
       
       return bScore - aScore
     })
+    
+    console.log(`Returning ${sortedMovies.length} draft eligible movies (no limits applied)`)
+    return sortedMovies
     
   } catch (error) {
     console.error('Error getting draft eligible movies:', error)
@@ -364,7 +367,7 @@ export async function getDraftEligibleMoviesOriginal(): Promise<DraftMovie[]> {
 
         return bScore - aScore
       })
-      .slice(0, 50) // Top 50 for draft
+      // Return ALL movies, no artificial limit
       .map((movie, index) => ({
         ...movie,
         draftRank: index + 1
