@@ -53,9 +53,10 @@ const SyncedDraftRoom = ({ leagueId = 'sample-league', currentUser }: SyncedDraf
       period1Score: 0,
       period2Score: 0,
       totalScore: 0,
-      rankCurrentPeriod: 1,
-      rankOverall: 1,
-      isChampionshipEligible: true
+      championshipQualified: true,
+      oscarPoints: 0,
+      currentRoster: [],
+      archivedRoster: []
     },
     { 
       userId: 'user-2', 
@@ -66,9 +67,10 @@ const SyncedDraftRoom = ({ leagueId = 'sample-league', currentUser }: SyncedDraf
       period1Score: 0,
       period2Score: 0,
       totalScore: 0,
-      rankCurrentPeriod: 2,
-      rankOverall: 2,
-      isChampionshipEligible: true
+      championshipQualified: true,
+      oscarPoints: 0,
+      currentRoster: [],
+      archivedRoster: []
     },
     { 
       userId: 'user-3', 
@@ -79,9 +81,10 @@ const SyncedDraftRoom = ({ leagueId = 'sample-league', currentUser }: SyncedDraf
       period1Score: 0,
       period2Score: 0,
       totalScore: 0,
-      rankCurrentPeriod: 3,
-      rankOverall: 3,
-      isChampionshipEligible: true
+      championshipQualified: true,
+      oscarPoints: 0,
+      currentRoster: [],
+      archivedRoster: []
     },
     { 
       userId: 'user-4', 
@@ -92,9 +95,10 @@ const SyncedDraftRoom = ({ leagueId = 'sample-league', currentUser }: SyncedDraf
       period1Score: 0,
       period2Score: 0,
       totalScore: 0,
-      rankCurrentPeriod: 4,
-      rankOverall: 4,
-      isChampionshipEligible: true
+      championshipQualified: true,
+      oscarPoints: 0,
+      currentRoster: [],
+      archivedRoster: []
     }
   ]
 
