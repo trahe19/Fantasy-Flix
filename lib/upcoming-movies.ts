@@ -442,7 +442,7 @@ function predictOscarPotential(movie: any, credits: any, director?: string, cast
 
   return {
     overall_potential: Math.min(100, overallPotential),
-    categories: [...new Set(categories)], // Remove duplicates
+    categories: Array.from(new Set(categories)), // Remove duplicates
     release_timing_score: releaseTimingScore,
     genre_advantage: isOscarGenre,
     director_pedigree: directorPedigree,
