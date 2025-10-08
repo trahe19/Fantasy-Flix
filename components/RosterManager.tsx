@@ -150,7 +150,7 @@ const RosterManager = ({ leagueId, currentUser, currentPeriod, roster, onRosterM
                                   
                                   <div className="flex-1">
                                     <div className="flex items-center space-x-2">
-                                      <p className="font-bold text-white text-lg">{slot.movie.title}</p>
+                                      <p className="font-bold text-white text-lg drop-shadow-md" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.8)'}}>{slot.movie.title}</p>
                                       <span className="text-lg">{getMovieStatusIcon(slot)}</span>
                                     </div>
                                     
@@ -264,7 +264,7 @@ const RosterManager = ({ leagueId, currentUser, currentPeriod, roster, onRosterM
                                   
                                   <div className="flex-1">
                                     <div className="flex items-center space-x-1">
-                                      <p className="font-bold text-white text-sm truncate">{slot.movie.title}</p>
+                                      <p className="font-bold text-white text-sm drop-shadow-md" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.8)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'}}>{slot.movie.title}</p>
                                       <span>{getMovieStatusIcon(slot)}</span>
                                     </div>
                                     

@@ -51,7 +51,7 @@ const ChampionshipTracker = ({
       imdbRating: 8.4,
       boxOfficeData: [],
       genres: ['Drama', 'Biography', 'History'],
-      posterUrl: '/placeholder-movie.jpg',
+      posterUrl: '/placeholder-movie.svg',
       runtime: 180,
       director: 'Christopher Nolan'
     },
@@ -65,7 +65,7 @@ const ChampionshipTracker = ({
       imdbRating: 7.0,
       boxOfficeData: [],
       genres: ['Comedy', 'Adventure', 'Fantasy'],
-      posterUrl: '/placeholder-movie.jpg',
+      posterUrl: '/placeholder-movie.svg',
       runtime: 114,
       director: 'Greta Gerwig'
     }
@@ -482,7 +482,7 @@ const ChampionshipTracker = ({
                   <div key={movie.id} className="glass rounded-xl p-5 hover:card-glow transition-all">
                     <div className="aspect-[2/3] relative overflow-hidden rounded-xl mb-4">
                       <img
-                        src={movie.posterUrl || '/placeholder-movie.jpg'}
+                        src={movie.posterUrl || '/placeholder-movie.svg'}
                         alt={movie.title}
                         className="w-full h-full object-cover"
                       />

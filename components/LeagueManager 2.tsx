@@ -22,8 +22,6 @@ const LeagueManager = () => {
   const [currentStep, setCurrentStep] = useState(1)
   const [inviteEmail, setInviteEmail] = useState('')
   const [isInviting, setIsInviting] = useState(false)
-  const [showLeagueDashboard, setShowLeagueDashboard] = useState(false)
-  const [selectedPlayer, setSelectedPlayer] = useState('grant')
   const [formData, setFormData] = useState<LeagueFormData>({
     name: '',
     maxPlayers: 6,
@@ -38,129 +36,15 @@ const LeagueManager = () => {
       const user = await getCurrentUser()
       if (user) {
         setCurrentUser(user)
-
-        // Complete league data with all player rosters
-        const generateRevenue = (budget: number, multiplier: number) => Math.round(budget * multiplier)
-
-        const allPlayers = {
-          grant: {
-            id: 1,
-            name: 'Grant',
-            displayName: 'Grant Geyer',
-            isCurrentUser: true,
-            roster: [
-              { title: 'Wicked: For Good', budget: 165000000, multiplier: 1.48 },
-              { title: 'Superman', budget: 225000000, multiplier: 1.44 },
-              { title: 'A Minecraft Movie', budget: 150000000, multiplier: 1.23 },
-              { title: '28 Years Later', budget: 60000000, multiplier: 1.42 },
-              { title: 'Sinners', budget: 90000000, multiplier: 1.50 },
-              { title: 'Five Nights at Freddy 2 (Sixth Man)', budget: 51000000, multiplier: 1.20, isSixthMan: true }
-            ]
-          },
-          josh: {
-            id: 2,
-            name: 'Josh',
-            displayName: 'Josh M.',
-            isCurrentUser: false,
-            roster: [
-              { title: 'Captain America 4', budget: 180000000, multiplier: 1.35 },
-              { title: 'How to Train Your Dragon', budget: 150000000, multiplier: 1.28 },
-              { title: 'Mickey 17', budget: 118000000, multiplier: 1.15 },
-              { title: 'Frankenstein', budget: 100000000, multiplier: 1.22 },
-              { title: 'The Running Man', budget: 90000000, multiplier: 0.95 },
-              { title: 'Thunderbolts (Sixth Man)', budget: 175000000, multiplier: 1.18, isSixthMan: true }
-            ]
-          },
-          will: {
-            id: 3,
-            name: 'Will',
-            displayName: 'Will S.',
-            isCurrentUser: false,
-            roster: [
-              { title: 'Elio', budget: 150000000, multiplier: 1.42 },
-              { title: 'Dog Man', budget: 40000000, multiplier: 1.85 },
-              { title: 'Lilo & Stitch', budget: 100000000, multiplier: 1.55 },
-              { title: 'Jurassic World', budget: 265000000, multiplier: 1.38 },
-              { title: 'The Karate Kid', budget: 150000000, multiplier: 1.25 },
-              { title: 'Moana (Sixth Man)', budget: 120000000, multiplier: 1.33, isSixthMan: true }
-            ]
-          },
-          tyler: {
-            id: 4,
-            name: 'Tyler',
-            displayName: 'Tyler K.',
-            isCurrentUser: false,
-            roster: [
-              { title: 'Avatar: Fire and Ash', budget: 250000000, multiplier: 2.12 },
-              { title: 'Zootopia 2', budget: 150000000, multiplier: 1.65 },
-              { title: 'The Conjuring: Last Rites', budget: 50000000, multiplier: 1.78 },
-              { title: 'Fantastic 4: First Steps', budget: 200000000, multiplier: 1.31 },
-              { title: 'Michael', budget: 85000000, multiplier: 0.88 },
-              { title: 'Beyond the Spiderverse (Sixth Man)', budget: 160000000, multiplier: 1.42, isSixthMan: true }
-            ]
-          }
-        }
-
-        // Calculate performance for each player
-        const calculatePlayerStats = (player: any) => {
-          let totalBudget = 0
-          let totalRevenue = 0
-          let totalProfit = 0
-
-          const enrichedRoster = player.roster.map((movie: any) => {
-            const revenue = generateRevenue(movie.budget, movie.multiplier)
-            const profit = revenue - movie.budget
-            totalBudget += movie.budget
-            totalRevenue += revenue
-            totalProfit += profit
-
-            return {
-              ...movie,
-              revenue,
-              profit
-            }
-          })
-
-          return {
-            ...player,
-            roster: enrichedRoster,
-            totalBudget,
-            totalRevenue,
-            totalProfit,
-            roi: ((totalProfit / totalBudget) * 100)
-          }
-        }
-
-        const playerStats = Object.values(allPlayers).map(calculatePlayerStats)
-        const sortedStandings = playerStats.sort((a, b) => b.totalProfit - a.totalProfit)
-
-        const demoLeague = {
-          id: 'demo-league-001',
-          name: 'Father Flix League',
-          status: 'active',
-          maxPlayers: 4,
-          currentPlayers: 4,
-          season: '2025 Season',
-          prizePool: 200,
-          createdBy: user.id,
-          draftDate: '2024-12-15T19:00:00.000Z',
-          members: Object.values(allPlayers),
-          standings: sortedStandings.map((player, idx) => ({
-            rank: idx + 1,
-            player: player.displayName,
-            totalProfit: player.totalProfit,
-            totalBudget: player.totalBudget,
-            totalRevenue: player.totalRevenue,
-            roi: player.roi,
-            roster: player.roster
-          })),
-          allPlayers: playerStats
-        }
-
-        setLeagues([demoLeague])
+        
+        // Update existing leagues to show proper display names
+        await updateLeaguePlayerNames()
+        
+        const userLeagues = await getUserLeagues(user.id)
+        setLeagues(userLeagues)
       }
     }
-
+    
     loadUser()
   }, [])
 
@@ -297,8 +181,9 @@ const LeagueManager = () => {
   }
 
   const handleEnterLeague = (league: any) => {
-    setSelectedLeague(league)
-    setShowLeagueDashboard(true)
+    console.log('Entering league:', league.name)
+    // TODO: Navigate to league dashboard/draft room
+    alert(`Entering ${league.name} - Draft room coming soon!`)
   }
 
   const handleLeagueSettings = (league: any) => {
@@ -312,7 +197,7 @@ const LeagueManager = () => {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-black/80 via-black/90 to-black">
       {/* Hollywood Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-10 left-10 w-64 h-64 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full opacity-10 animate-pulse" style={{ animationDuration: '4s' }} />
@@ -332,247 +217,85 @@ const LeagueManager = () => {
       <div className="relative z-10 px-4 py-6">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-black text-gradient mb-4">🎬 My Epic Leagues</h1>
+          <h1 className="text-5xl font-black bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent leading-tight py-2 mb-4">🎬 My Epic Leagues</h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
             Manage your fantasy movie empire. Create leagues, draft blockbusters, and dominate the box office!
           </p>
         </div>
 
+        {/* Create League Button */}
+        <div className="text-center mb-8">
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="px-8 py-4 bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-black text-lg rounded-2xl hover:scale-110 transform transition-all duration-300 shadow-2xl animate-bounce-slow"
+          >
+            🎭 Create New League
+          </button>
+        </div>
 
-        {/* Active League Dashboard */}
-        {leagues.length > 0 && (
-          <div className="max-w-7xl mx-auto">
+        {/* Leagues Grid */}
+        {leagues.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {leagues.map((league, index) => (
-              <div key={league.id || index} className="space-y-8">
-                {/* League Header */}
-                <div className="glass-elegant p-6 rounded-2xl">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h2 className="text-3xl font-bold text-white mb-2">{league.name}</h2>
-                      <div className="flex items-center space-x-4 text-sm text-gray-300">
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                          league.status === 'active' ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'
-                        }`}>
-                          {league.status.toUpperCase()}
-                        </span>
-                        <span>{league.season}</span>
-                        <span>{league.currentPlayers}/{league.maxPlayers} Players</span>
-                        <span className="text-green-400 font-bold">Prize Pool: ${league.prizePool}</span>
-                      </div>
-                    </div>
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleLeagueSettings(league)}
-                        className="px-4 py-2 glass rounded-xl text-white hover:scale-105 transform transition-all"
-                        title="League Settings"
-                      >
-                        ⚙️
-                      </button>
-                    </div>
+              <div key={league.id || index} className="bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl p-6 rounded-3xl border border-amber-500/20 shadow-2xl hover:shadow-amber-500/10 transition-all duration-300">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-white">{league.name}</h3>
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                    league.status === 'draft' ? 'bg-blue-500 text-white' :
+                    league.status === 'active' ? 'bg-green-500 text-white' :
+                    'bg-gray-500 text-white'
+                  }`}>
+                    {league.status.toUpperCase()}
+                  </span>
+                </div>
+                
+                <div className="space-y-2 text-sm text-gray-300">
+                  <div className="flex justify-between">
+                    <span>Players:</span>
+                    <span className="text-white">{league.currentPlayers || 1}/{league.maxPlayers}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Season:</span>
+                    <span className="text-white">{league.season || '2025-2026'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Prize Pool:</span>
+                    <span className="text-green-400 font-bold">${league.prizePool || 0}</span>
                   </div>
                 </div>
 
-                {/* League Members */}
-                <div className="glass-elegant p-6 rounded-2xl">
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                    👥 League Members
-                  </h3>
-                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {league.members.map((member: any) => (
-                      <div key={member.id} className={`p-4 rounded-xl border-2 transition-all ${
-                        member.isCurrentUser
-                          ? 'bg-gradient-to-br from-amber-500/20 to-yellow-500/20 border-amber-500/50'
-                          : 'bg-gray-800/30 border-gray-600/30 hover:border-gray-500/50'
-                      }`}>
-                        <div className="text-center">
-                          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg mb-2 mx-auto ${
-                            member.isCurrentUser ? 'bg-gradient-to-r from-amber-500 to-yellow-500' : 'bg-gradient-to-r from-gray-600 to-gray-500'
-                          }`}>
-                            {member.name.charAt(0)}
-                          </div>
-                          <h4 className="text-white font-bold">{member.displayName}</h4>
-                          {member.isCurrentUser && (
-                            <span className="text-amber-400 text-xs font-medium">You</span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                <div className="mt-6 flex space-x-2">
+                  <button 
+                    onClick={() => handleEnterLeague(league)}
+                    className="flex-1 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-xl hover:scale-105 transform transition-all"
+                  >
+                    Enter League
+                  </button>
+                  <button 
+                    onClick={() => handleLeagueSettings(league)}
+                    className="px-4 py-2 bg-black/30 backdrop-blur-sm border border-white/20 rounded-xl text-white hover:scale-105 transform transition-all"
+                    title="League Settings"
+                  >
+                    ⚙️
+                  </button>
+                  <button 
+                    onClick={() => handleInvitePlayers(league)}
+                    className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-medium rounded-xl hover:scale-105 transform transition-all"
+                    title="Invite Players"
+                  >
+                    👥
+                  </button>
                 </div>
-
-                {/* Player Performance Dashboard */}
-                <div className="glass-elegant p-6 rounded-2xl">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold text-white flex items-center">
-                      📊 Portfolio Performance Dashboard
-                    </h3>
-                    <select
-                      value={selectedPlayer}
-                      onChange={(e) => setSelectedPlayer(e.target.value)}
-                      className="bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-amber-500 transition-colors"
-                    >
-                      <option value="grant">Grant Geyer (You)</option>
-                      <option value="josh">Josh M.</option>
-                      <option value="will">Will S.</option>
-                      <option value="tyler">Tyler K.</option>
-                    </select>
-                  </div>
-
-                  {/* Selected Player Portfolio */}
-                  {(() => {
-                    const currentPlayerData = league.allPlayers.find((p: any) => p.name.toLowerCase() === selectedPlayer)
-                    const isCurrentUser = selectedPlayer === 'grant'
-
-                    return (
-                      <div className="space-y-6">
-                        {/* Performance Summary */}
-                        <div className={`p-6 rounded-xl border-2 ${
-                          isCurrentUser
-                            ? 'bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border-amber-500/50'
-                            : 'bg-gray-800/30 border-gray-600/50'
-                        }`}>
-                          <div className="flex items-center justify-between mb-4">
-                            <div>
-                              <h4 className={`text-2xl font-bold ${
-                                isCurrentUser ? 'text-amber-300' : 'text-white'
-                              }`}>
-                                {currentPlayerData?.displayName}
-                                {isCurrentUser && <span className="text-amber-400 text-sm ml-2">(You)</span>}
-                              </h4>
-                              <p className="text-gray-400">League Rank: #{league.standings.findIndex((s: any) => s.player === currentPlayerData?.displayName) + 1}/4</p>
-                            </div>
-                            <div className="text-right">
-                              <div className={`text-3xl font-bold ${
-                                currentPlayerData?.totalProfit > 0 ? 'text-green-400' : 'text-red-400'
-                              }`}>
-                                {currentPlayerData?.totalProfit > 0 ? '+' : ''}${(currentPlayerData?.totalProfit / 1000000).toFixed(0)}M
-                              </div>
-                              <div className="text-gray-400">
-                                {currentPlayerData?.roi.toFixed(1)}% ROI
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Portfolio Breakdown */}
-                          <div className="grid md:grid-cols-3 gap-4">
-                            <div className="bg-gray-900/30 rounded-lg p-4">
-                              <div className="text-gray-400 text-sm">Total Budget</div>
-                              <div className="text-white font-bold text-lg">${(currentPlayerData?.totalBudget / 1000000).toFixed(0)}M</div>
-                            </div>
-                            <div className="bg-gray-900/30 rounded-lg p-4">
-                              <div className="text-gray-400 text-sm">Total Revenue</div>
-                              <div className="text-white font-bold text-lg">${(currentPlayerData?.totalRevenue / 1000000).toFixed(0)}M</div>
-                            </div>
-                            <div className={`rounded-lg p-4 ${
-                              currentPlayerData?.totalProfit > 0 ? 'bg-green-900/30 border border-green-500/30' : 'bg-red-900/30 border border-red-500/30'
-                            }`}>
-                              <div className={`text-sm ${
-                                currentPlayerData?.totalProfit > 0 ? 'text-green-400' : 'text-red-400'
-                              }`}>Net Profit</div>
-                              <div className={`font-bold text-lg ${
-                                currentPlayerData?.totalProfit > 0 ? 'text-green-400' : 'text-red-400'
-                              }`}>
-                                {currentPlayerData?.totalProfit > 0 ? '+' : ''}${(currentPlayerData?.totalProfit / 1000000).toFixed(0)}M
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Player's Complete Roster */}
-                        <div>
-                          <h4 className="text-lg font-bold text-white mb-4">Complete Roster</h4>
-                          <div className="space-y-3">
-                            {currentPlayerData?.roster.map((movie: any, idx: number) => (
-                              <div key={idx} className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
-                                movie.isSixthMan
-                                  ? 'bg-purple-900/20 border-purple-500/30'
-                                  : 'bg-gray-800/30 border-gray-600/30'
-                              }`}>
-                                <div className="flex items-center space-x-4">
-                                  <div className={`px-3 py-1 rounded-full text-xs font-bold ${
-                                    movie.isSixthMan
-                                      ? 'bg-purple-500/20 text-purple-400'
-                                      : 'bg-blue-500/20 text-blue-400'
-                                  }`}>
-                                    {movie.isSixthMan ? 'SIXTH MAN' : `MOVIE ${idx + 1}`}
-                                  </div>
-                                  <div>
-                                    <h5 className="text-white font-bold">
-                                      {movie.title.replace(' (Sixth Man)', '')}
-                                    </h5>
-                                    <p className="text-gray-400 text-sm">
-                                      Budget: ${(movie.budget / 1000000).toFixed(0)}M → Revenue: ${(movie.revenue / 1000000).toFixed(0)}M
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="text-right">
-                                  <div className={`text-lg font-bold ${
-                                    movie.profit > 0 ? 'text-green-400' : 'text-red-400'
-                                  }`}>
-                                    {movie.profit > 0 ? '+' : ''}${(movie.profit / 1000000).toFixed(0)}M
-                                  </div>
-                                  <div className="text-gray-400 text-sm">
-                                    {((movie.profit / movie.budget) * 100).toFixed(1)}% ROI
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  })()}
-                </div>
-
-                {/* League Standings */}
-                <div className="glass-elegant p-6 rounded-2xl">
-                  <h3 className="text-xl font-bold text-white mb-6 flex items-center">
-                    🏆 League Standings
-                  </h3>
-                  <div className="space-y-4">
-                    {league.standings.map((player: any, idx: number) => (
-                      <div
-                        key={idx}
-                        className={`p-4 rounded-xl border transition-all cursor-pointer hover:scale-[1.02] ${
-                          player.player === 'Grant Geyer'
-                            ? 'bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border-amber-500/50'
-                            : 'bg-gray-800/30 border-gray-600/30 hover:border-gray-500/50'
-                        }`}
-                        onClick={() => {
-                          const playerKey = player.player.split(' ')[0].toLowerCase()
-                          setSelectedPlayer(playerKey)
-                        }}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-4">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${
-                              idx === 0 ? 'bg-yellow-500' : idx === 1 ? 'bg-gray-400' : idx === 2 ? 'bg-amber-600' : 'bg-gray-600'
-                            }`}>
-                              {player.rank}
-                            </div>
-                            <div>
-                              <h4 className="text-white font-bold text-lg">{player.player}</h4>
-                              <p className="text-gray-400 text-sm">{player.roster.length} movies • Click to view</p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className={`text-xl font-bold ${
-                              player.totalProfit > 0 ? 'text-green-400' : 'text-red-400'
-                            }`}>
-                              {player.totalProfit > 0 ? '+' : ''}${(player.totalProfit / 1000000).toFixed(0)}M
-                            </div>
-                            <div className="text-gray-400 text-sm">
-                              ROI: {player.roi.toFixed(1)}%
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="text-center max-w-2xl mx-auto glass-elegant p-12 rounded-3xl">
+            <div className="text-8xl mb-6">🎬</div>
+            <h2 className="text-3xl font-bold text-white mb-4">No Leagues Yet</h2>
+            <p className="text-gray-300 text-lg">
+              Ready to become a movie mogul? Use the "Create New League" button above to start drafting the next blockbuster lineup!
+            </p>
           </div>
         )}
 

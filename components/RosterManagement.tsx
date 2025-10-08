@@ -12,17 +12,84 @@ const RosterManagement = memo(function RosterManagement() {
   const [upcomingMovies, setUpcomingMovies] = useState<TMDBMovie[]>([])
   const [isLoadingMovies, setIsLoadingMovies] = useState(true)
 
-  // Real data - start with empty roster until user actually drafts
+  // Grant's actual roster from Father Flix League
   const [starters, setStarters] = useState([
-    { id: 1, movie: null, locked: false },
-    { id: 2, movie: null, locked: false },
-    { id: 3, movie: null, locked: false },
-    { id: 4, movie: null, locked: false },
-    { id: 5, movie: null, locked: false },
+    {
+      id: 1,
+      movie: {
+        title: 'Wicked: For Good',
+        release_date: '2025-11-21',
+        budget: 165000000,
+        revenue: 245000000,
+        profit: 80000000,
+        poster_path: '/poster1.jpg'
+      },
+      locked: false
+    },
+    {
+      id: 2,
+      movie: {
+        title: 'Superman',
+        release_date: '2025-07-11',
+        budget: 225000000,
+        revenue: 325000000,
+        profit: 100000000,
+        poster_path: '/poster2.jpg'
+      },
+      locked: false
+    },
+    {
+      id: 3,
+      movie: {
+        title: 'A Minecraft Movie',
+        release_date: '2025-04-04',
+        budget: 150000000,
+        revenue: 185000000,
+        profit: 35000000,
+        poster_path: '/poster3.jpg'
+      },
+      locked: false
+    },
+    {
+      id: 4,
+      movie: {
+        title: '28 Years Later',
+        release_date: '2025-06-20',
+        budget: 60000000,
+        revenue: 85000000,
+        profit: 25000000,
+        poster_path: '/poster4.jpg'
+      },
+      locked: false
+    },
+    {
+      id: 5,
+      movie: {
+        title: 'Sinners',
+        release_date: '2025-03-07',
+        budget: 90000000,
+        revenue: 135000000,
+        profit: 45000000,
+        poster_path: '/poster5.jpg'
+      },
+      locked: false
+    },
   ])
 
   const [reserves, setReserves] = useState([
-    { id: 6, movie: null, locked: false },
+    {
+      id: 6,
+      movie: {
+        title: 'Five Nights at Freddy 2',
+        release_date: '2025-12-05',
+        budget: 51000000,
+        revenue: 61000000,
+        profit: 10000000,
+        poster_path: '/poster6.jpg',
+        isSixthMan: true
+      },
+      locked: false
+    },
     { id: 7, movie: null, locked: false },
     { id: 8, movie: null, locked: false },
     { id: 9, movie: null, locked: false },
@@ -233,9 +300,9 @@ const RosterManagement = memo(function RosterManagement() {
                       <div className="text-xs text-gray-400">
                         📅 {new Date(slot.movie.release_date).toLocaleDateString()}
                         {slot.locked && ' 🔒'}
-                        {slot.movie.score && slot.movie.score > 0 && (
+                        {slot.movie.revenue && slot.movie.revenue > 0 && (
                           <span className="text-green-400 ml-2">
-                            +${(slot.movie.score / 1000000).toFixed(0)}M
+                            +${(slot.movie.revenue / 1000000).toFixed(0)}M
                           </span>
                         )}
                       </div>
@@ -311,7 +378,7 @@ const RosterManagement = memo(function RosterManagement() {
                       alt={movie.title}
                       className="w-8 h-12 object-cover rounded opacity-75 group-hover:opacity-100 transition-opacity"
                       onError={(e) => {
-                        e.currentTarget.src = '/placeholder-movie.jpg'
+                        e.currentTarget.src = '/placeholder-movie.svg'
                       }}
                     />
                     <div className="flex-1">

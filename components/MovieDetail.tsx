@@ -1,6 +1,7 @@
 'use client'
 
 import { memo } from 'react'
+import { BoxOfficeGrid, BoxOfficeProjectionBar } from './ResponsiveBoxOfficeDisplay'
 
 interface MovieDetailProps {
   movie: any
@@ -17,164 +18,164 @@ const MovieDetail = memo(function MovieDetail({ movie, onClose, onDraft }: Movie
       rating: 'PG-13',
       runtime: '165 min',
       distributor: 'Warner Bros',
-      projectedOpening: '$185M',
-      projectedTotal: '$750M',
-      profitPotential: '⭐⭐⭐⭐⭐',
-      competition: ['Avatar 5', 'Star Wars'],
-      riskLevel: 'Medium',
-      expertTake: "Villeneuve never misses. Lock this in!",
+      budget: 190000000,
+      projectedOpening: 85000000,
+      projectedTotal: 650000000
     },
-    'Avatar 4': {
+    'Avatar: Fire and Ash': {
       director: 'James Cameron',
       cast: ['Sam Worthington', 'Zoe Saldana', 'Sigourney Weaver'],
-      synopsis: 'Jake and Neytiri explore new regions of Pandora and encounter different Na\'vi tribes.',
+      synopsis: 'The next chapter in the Avatar saga brings new challenges and adventures to Pandora.',
       rating: 'PG-13',
       runtime: '180 min',
-      distributor: 'Disney',
-      projectedOpening: '$250M',
-      projectedTotal: '$2.1B',
-      profitPotential: '⭐⭐⭐⭐⭐',
-      competition: ['Dune 3'],
-      riskLevel: 'Low',
-      expertTake: "Cameron = Money printer. Draft immediately!",
+      distributor: '20th Century Studios',
+      budget: 350000000,
+      projectedOpening: 180000000,
+      projectedTotal: 2300000000
     },
+    'Mission: Impossible - The Final Reckoning': {
+      director: 'Christopher McQuarrie',
+      cast: ['Tom Cruise', 'Hayley Atwell', 'Ving Rhames'],
+      synopsis: 'Ethan Hunt faces his most dangerous mission yet in this explosive finale.',
+      rating: 'PG-13',
+      runtime: '155 min',
+      distributor: 'Paramount Pictures',
+      budget: 290000000,
+      projectedOpening: 85000000,
+      projectedTotal: 750000000
+    }
   }
 
-  const details = movieDetails[movie.title as keyof typeof movieDetails] || {
-    director: 'TBD',
-    cast: ['Cast not announced'],
-    synopsis: 'Plot details are under wraps. This highly anticipated film is expected to be a major blockbuster.',
+  const details = movieDetails[movie.title] || {
+    director: 'Unknown',
+    cast: [],
+    synopsis: 'Details coming soon...',
     rating: 'Not Rated',
     runtime: 'TBD',
-    distributor: 'Major Studio',
-    projectedOpening: `$${(movie.budget * 0.8).toFixed(0)}M`,
-    projectedTotal: `$${(movie.budget * 3.5).toFixed(0)}M`,
-    profitPotential: '⭐⭐⭐⭐',
-    competition: ['Other blockbusters'],
-    riskLevel: 'Medium',
-    expertTake: "Solid pick with good upside potential.",
+    distributor: 'TBD',
+    budget: 0,
+    projectedOpening: 0,
+    projectedTotal: 0
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50" onClick={onClose}>
-      <div className="glass-dark rounded-3xl p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto transform scale-100" onClick={(e) => e.stopPropagation()}>
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <h2 className="text-4xl font-black text-gradient mb-2">{movie.title}</h2>
-            <div className="flex items-center space-x-4 text-gray-400">
-              <span>{details.rating}</span>
-              <span>•</span>
-              <span>{details.runtime}</span>
-              <span>•</span>
-              <span>{movie.releaseDate}</span>
-              <span>•</span>
-              <span className="text-blue-400">{details.distributor}</span>
-            </div>
-          </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-white text-3xl">×</button>
-        </div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto border border-amber-500/20">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div className="space-y-4">
-            <div className="glass rounded-xl p-4">
-              <p className="text-gray-400 text-sm mb-2">Synopsis</p>
-              <p className="text-white">{details.synopsis}</p>
-            </div>
-
-            <div className="glass rounded-xl p-4">
-              <p className="text-gray-400 text-sm mb-2">Director</p>
-              <p className="text-white font-bold text-xl">{details.director}</p>
-            </div>
-
-            <div className="glass rounded-xl p-4">
-              <p className="text-gray-400 text-sm mb-2">Cast</p>
-              <div className="flex flex-wrap gap-2">
-                {details.cast.map((actor, idx) => (
-                  <span key={idx} className="px-3 py-1 bg-blue-900/50 rounded-full text-white text-sm">
-                    {actor}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="gradient-blue rounded-xl p-4">
-              <p className="text-white/80 text-sm mb-2">Expert Analysis 🔥</p>
-              <p className="text-white font-bold">{details.expertTake}</p>
-              <div className="mt-3">
-                <span className="text-yellow-300">Profit Potential: {details.profitPotential}</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="glass rounded-xl p-4">
-                <p className="text-gray-400 text-sm">Production Budget</p>
-                <p className="text-2xl font-bold text-white">${movie.budget}M</p>
-              </div>
-              <div className="glass rounded-xl p-4">
-                <p className="text-gray-400 text-sm">Projected Opening</p>
-                <p className="text-2xl font-bold text-green-400">{details.projectedOpening}</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="glass rounded-xl p-4">
-                <p className="text-gray-400 text-sm">Projected Total</p>
-                <p className="text-2xl font-bold text-yellow-400">{details.projectedTotal}</p>
-              </div>
-              <div className="glass rounded-xl p-4">
-                <p className="text-gray-400 text-sm">Risk Level</p>
-                <p className="text-xl font-bold text-orange-400">{details.riskLevel}</p>
-              </div>
-            </div>
-
-            <div className="glass rounded-xl p-4">
-              <p className="text-gray-400 text-sm mb-2">Competition</p>
-              <div className="flex flex-wrap gap-2">
-                {details.competition.map((comp, idx) => (
-                  <span key={idx} className="text-red-400 text-sm">⚔️ {comp}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="glass rounded-xl p-4 mb-6">
-          <p className="text-gray-400 text-sm mb-3">Box Office Projections</p>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-white">Week 1</span>
-              <div className="flex-1 mx-4 h-4 bg-gray-800 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-green-500 to-green-400" style={{width: '60%'}}></div>
-              </div>
-              <span className="text-green-400">{details.projectedOpening}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-white">Month 1</span>
-              <div className="flex-1 mx-4 h-4 bg-gray-800 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-yellow-500 to-yellow-400" style={{width: '80%'}}></div>
-              </div>
-              <span className="text-yellow-400">$450M</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-white">Total Run</span>
-              <div className="flex-1 mx-4 h-4 bg-gray-800 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-blue-500 to-cyan-500" style={{width: '100%'}}></div>
-              </div>
-              <span className="text-blue-400">{details.projectedTotal}</span>
-            </div>
-          </div>
-        </div>
-
-        {onDraft && (
-          <button 
-            onClick={onDraft}
-            className="w-full gradient-blue text-white py-4 rounded-xl font-black text-xl hover:scale-105 transform transition-all"
+        {/* Header */}
+        <div className="relative p-6 border-b border-gray-700">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl font-bold transition-colors"
           >
-            DRAFT THIS BLOCKBUSTER 🚀
+            ×
           </button>
+
+          <div className="flex items-start gap-6">
+            <img
+              src={movie.poster_path ? `https://image.tmdb.org/t/media/w500${movie.poster_path}` : '/placeholder-movie.jpg'}
+              alt={movie.title}
+              className="w-32 h-48 object-cover rounded-lg border border-amber-500/30"
+            />
+
+            <div className="flex-1">
+              <h2 className="text-3xl font-bold text-amber-300 mb-2">{movie.title}</h2>
+              <p className="text-gray-300 text-lg mb-4 leading-relaxed">{movie.overview || details.synopsis}</p>
+
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-amber-400 font-semibold">Director:</span>
+                  <span className="ml-2 text-gray-300">{details.director}</span>
+                </div>
+                <div>
+                  <span className="text-amber-400 font-semibold">Rating:</span>
+                  <span className="ml-2 text-gray-300">{details.rating}</span>
+                </div>
+                <div>
+                  <span className="text-amber-400 font-semibold">Runtime:</span>
+                  <span className="ml-2 text-gray-300">{details.runtime}</span>
+                </div>
+                <div>
+                  <span className="text-amber-400 font-semibold">Distributor:</span>
+                  <span className="ml-2 text-gray-300">{details.distributor}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Box Office Section */}
+        <div className="p-6">
+          <h3 className="text-2xl font-bold text-amber-300 mb-6">📊 Box Office Projections</h3>
+
+          {/* Main Box Office Grid */}
+          <BoxOfficeGrid
+            budget={details.budget}
+            projectedOpening={details.projectedOpening}
+            projectedTotal={details.projectedTotal}
+            className="mb-8"
+          />
+
+          {/* Performance Projections */}
+          <div className="bg-gray-800/30 rounded-xl p-6">
+            <h4 className="text-xl font-bold text-amber-300 mb-4">Performance Projections</h4>
+            <div className="space-y-4">
+              <BoxOfficeProjectionBar
+                label="Opening Weekend"
+                amount={details.projectedOpening}
+                percentage={60}
+                color="from-green-500 to-green-400"
+              />
+              <BoxOfficeProjectionBar
+                label="First Month"
+                amount={details.projectedTotal * 0.4}
+                percentage={80}
+                color="from-yellow-500 to-yellow-400"
+              />
+              <BoxOfficeProjectionBar
+                label="Total Lifetime"
+                amount={details.projectedTotal}
+                percentage={100}
+                color="from-blue-500 to-cyan-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Cast */}
+        {details.cast.length > 0 && (
+          <div className="px-6 pb-6">
+            <h3 className="text-xl font-bold text-amber-300 mb-3">🎭 Starring</h3>
+            <div className="flex flex-wrap gap-2">
+              {details.cast.map((actor, index) => (
+                <span
+                  key={index}
+                  className="bg-gray-700 text-gray-200 px-3 py-1 rounded-full text-sm border border-amber-500/20"
+                >
+                  {actor}
+                </span>
+              ))}
+            </div>
+          </div>
         )}
+
+        {/* Action Buttons */}
+        <div className="p-6 border-t border-gray-700 flex gap-4">
+          {onDraft && (
+            <button
+              onClick={onDraft}
+              className="flex-1 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold py-3 px-6 rounded-lg hover:from-amber-700 hover:to-amber-600 transition-all duration-200 shadow-lg"
+            >
+              🎯 Draft This Movie
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="flex-1 bg-gray-700 text-gray-300 font-bold py-3 px-6 rounded-lg hover:bg-gray-600 transition-colors"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   )

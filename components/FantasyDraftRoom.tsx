@@ -256,7 +256,7 @@ const FantasyDraftRoom = ({ draftRoom, currentUser, leagueMembers, onDraftPick, 
                     </div>
                     
                     <div className="p-2 bg-gray-900">
-                      <p className="text-sm font-bold text-white truncate">{movie.title}</p>
+                      <p className="text-sm font-bold text-white drop-shadow-md" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.8)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'}}>{movie.title}</p>
                       <p className="text-xs text-gray-400">
                         {new Date(movie.releaseDate).getFullYear()}
                       </p>
