@@ -96,7 +96,7 @@ export async function getUpcomingMoviesForVault(page: number = 1): Promise<Upcom
 
       // Enhance each movie with detailed data
       const enhancedMovies = await Promise.all(
-        substantialMovies.slice(0, 20).map(async (movie: TMDBMovie) => {
+        substantialMovies.slice(0, 60).map(async (movie: TMDBMovie) => {
           try {
             return await enhanceMovieForVault(movie);
           } catch (error) {
@@ -105,6 +105,90 @@ export async function getUpcomingMoviesForVault(page: number = 1): Promise<Upcom
           }
         })
       );
+
+      return enhancedMovies.sort((a, b) => {
+        // Sort by draft potential score, then by popularity
+        const scoreA = a.draft_potential?.overall_score || 0;
+        const scoreB = b.draft_potential?.overall_score || 0;
+        if (scoreA !== scoreB) return scoreB - scoreA;
+        return b.popularity - a.popularity;
+      });
+    } else {
+      console.log('No upcoming movies found, using fallback');
+      return await getFallbackUpcomingMovies();
+    }
+  } catch (error) {
+    console.warn('TMDB API error, using fallback upcoming movies:', error);
+    return await getFallbackUpcomingMovies();
+  }
+}
+
+// Get comprehensive movie pool for both vault and draft room
+export async function getComprehensiveMoviePool(): Promise<UpcomingMovie[]> {
+  try {
+    const today = new Date();
+    const endDate = new Date('2026-12-31'); // Extended to end of 2026
+    const todayStr = today.toISOString().split('T')[0];
+    const endDateStr = endDate.toISOString().split('T')[0];
+    console.log('Fetching comprehensive movie pool from', todayStr, 'to', endDateStr);
+    
+    // Fetch multiple pages to get many more movies
+    const allMovies: TMDBMovie[] = [];
+    const maxPages = 30; // Fetch up to 30 pages (600+ movies)
+    
+    for (let currentPage = 1; currentPage <= maxPages; currentPage++) {
+      try {
+        const data = await tmdbFetch(`/discover/movie?primary_release_date.gte=${todayStr}&primary_release_date.lte=${endDateStr}&page=${currentPage}&region=US&sort_by=popularity.desc&vote_count.gte=1&with_runtime.gte=60`);
+        
+        if (data.results && data.results.length > 0) {
+          allMovies.push(...data.results);
+        } else {
+          break; // No more results
+        }
+        
+        // Add delay to respect API rate limits
+        await new Promise(resolve => setTimeout(resolve, 80));
+      } catch (error) {
+        console.warn(`Error fetching page ${currentPage}:`, error);
+        break;
+      }
+    }
+
+    if (allMovies.length > 0) {
+      // Filter for movies likely to have substantial budgets (lowered thresholds for more movies)
+      const substantialMovies = allMovies.filter((movie: TMDBMovie) =>
+        movie.popularity > 3 || // Lowered threshold for more movies
+        movie.vote_count > 10 || // Some community interest
+        isLikelyBlockbuster(movie) // Genre/title suggests big budget
+      );
+      
+      console.log(`Found ${substantialMovies.length} substantial movies to enhance`);
+
+      // Enhanced processing in batches to avoid overwhelming the API
+      const batchSize = 8;
+      const enhancedMovies: UpcomingMovie[] = [];
+      
+      for (let i = 0; i < substantialMovies.length && i < 300; i += batchSize) { // Process up to 300 movies
+        const batch = substantialMovies.slice(i, i + batchSize);
+        
+        const batchResults = await Promise.all(
+          batch.map(async (movie: TMDBMovie) => {
+            try {
+              return await enhanceMovieForVault(movie);
+            } catch (error) {
+              console.warn(`Error enhancing movie ${movie.title}:`, error);
+              return enhanceMovieBasic(movie);
+            }
+          })
+        );
+        
+        enhancedMovies.push(...batchResults);
+        
+        // Rate limiting between batches
+        if (i + batchSize < substantialMovies.length) {
+          await new Promise(resolve => setTimeout(resolve, 150));
+        }
+      }
 
       return enhancedMovies.sort((a, b) => {
         // Sort by draft potential score, then by popularity

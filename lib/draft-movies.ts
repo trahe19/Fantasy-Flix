@@ -1,4 +1,6 @@
 import { tmdbFetch, getImageUrl } from './tmdb'
+import { getComprehensiveMoviePool, UpcomingMovie } from './upcoming-movies'
+import { getAvailableMovies, draftMovie } from './drafted-movies'
 
 export interface ProjectionConfidence {
   level: 'high' | 'medium' | 'low'
@@ -107,8 +109,142 @@ export interface DraftSettings {
   allowCommissioner: boolean
 }
 
-// Get movies eligible for the October 2025 - January 2026 draft window
-export async function getDraftEligibleMovies(): Promise<DraftMovie[]> {
+// Get draft-ready movies from comprehensive pool (synced with vault)
+export async function getDraftEligibleMovies(leagueId: string = 'sample-league'): Promise<DraftMovie[]> {
+  try {
+    console.log('Getting draft eligible movies from comprehensive pool...')
+    
+    // Get the comprehensive movie pool (same as vault)
+    const comprehensiveMovies = await getComprehensiveMoviePool()
+    console.log(`Got ${comprehensiveMovies.length} movies from comprehensive pool`)
+    
+    // Filter to only available (non-drafted) movies
+    const availableMovies = getAvailableMovies(comprehensiveMovies, leagueId)
+    console.log(`${availableMovies.length} movies available for draft`)
+    
+    // Convert UpcomingMovie to DraftMovie format
+    const draftMovies: DraftMovie[] = availableMovies.map((movie, index) => ({
+      id: movie.id,
+      title: movie.title,
+      overview: movie.overview,
+      release_date: movie.release_date,
+      poster_path: movie.poster_path,
+      backdrop_path: movie.backdrop_path,
+      genre_ids: movie.genre_ids || [],
+      vote_average: movie.vote_average || 6.0,
+      vote_count: movie.vote_count || 0,
+      popularity: movie.popularity,
+      estimated_budget: movie.estimated_budget || 50000000,
+      production_budget: movie.production_budget,
+      domestic_projection: movie.domestic_total_projection || movie.estimated_budget * 2,
+      worldwide_projection: movie.worldwide_projection || movie.estimated_budget * 3,
+      profit_projection: movie.profit_projection || movie.estimated_budget,
+      opening_weekend_projection: movie.opening_weekend_projection || movie.estimated_budget * 0.3,
+      main_cast: movie.main_cast || [],
+      director: movie.director || null,
+      production_companies: movie.production_companies?.map(c => c.name) || [],
+      runtime: undefined,
+      draftRank: index + 1,
+      isDrafted: false,
+      projection_confidence: createProjectionConfidenceFromUpcoming(movie),
+      risk_assessment: createRiskAssessmentFromUpcoming(movie),
+      oscar_potential: createOscarPotentialFromUpcoming(movie),
+      franchise_strength: createFranchiseStrengthFromUpcoming(movie),
+      scouting_report: createScoutingReportFromUpcoming(movie)
+    }))
+    
+    // Sort by draft potential/value
+    return draftMovies.sort((a, b) => {
+      const aScore = (a.domestic_projection * 0.4) + 
+                     (a.oscar_potential.score * 1000000 * 0.25) +
+                     (a.franchise_strength.score * 1000000 * 0.2) +
+                     (a.projection_confidence.percentage * 1000000 * 0.15)
+      
+      const bScore = (b.domestic_projection * 0.4) + 
+                     (b.oscar_potential.score * 1000000 * 0.25) +
+                     (b.franchise_strength.score * 1000000 * 0.2) +
+                     (b.projection_confidence.percentage * 1000000 * 0.15)
+      
+      return bScore - aScore
+    })
+    
+  } catch (error) {
+    console.error('Error getting draft eligible movies:', error)
+    return getFallbackDraftMovies()
+  }
+}
+
+// Fallback draft movies if API fails
+function getFallbackDraftMovies(): DraftMovie[] {
+  return [] // Return empty array - could add hardcoded movies here
+}
+
+// Convert UpcomingMovie data to DraftMovie interfaces
+function createProjectionConfidenceFromUpcoming(movie: UpcomingMovie): ProjectionConfidence {
+  const baseConfidence = movie.popularity > 50 ? 70 : movie.popularity > 20 ? 55 : 40
+  
+  return {
+    level: baseConfidence >= 70 ? 'high' : baseConfidence >= 50 ? 'medium' : 'low',
+    color: baseConfidence >= 70 ? '#22c55e' : baseConfidence >= 50 ? '#f59e0b' : '#ef4444',
+    percentage: baseConfidence,
+    factors: ['Derived from comprehensive movie analysis']
+  }
+}
+
+function createRiskAssessmentFromUpcoming(movie: UpcomingMovie): RiskAssessment {
+  const budget = movie.estimated_budget || 50000000
+  const releaseMonth = new Date(movie.release_date).getMonth() + 1
+  
+  return {
+    overall: budget > 150000000 ? 'high' : budget > 100000000 ? 'medium' : 'low',
+    factors: {
+      competition: releaseMonth === 12 ? 'high' : releaseMonth === 6 || releaseMonth === 7 ? 'medium' : 'low',
+      budget: budget > 200000000 ? 'high' : budget > 100000000 ? 'medium' : 'low',
+      timing: releaseMonth === 1 ? 'high' : 'low',
+      cast: (movie.main_cast?.length || 0) < 2 ? 'high' : 'low'
+    },
+    notes: ['Risk assessment based on comprehensive analysis']
+  }
+}
+
+function createOscarPotentialFromUpcoming(movie: UpcomingMovie): OscarPotential {
+  const oscarPred = movie.oscar_predictions
+  
+  return {
+    score: oscarPred?.overall_potential || 20,
+    categories: oscarPred?.categories || [],
+    likelihood: oscarPred?.overall_potential > 60 ? 'high' : oscarPred?.overall_potential > 30 ? 'medium' : 'low',
+    factors: ['Based on genre, cast, director, and release timing']
+  }
+}
+
+function createFranchiseStrengthFromUpcoming(movie: UpcomingMovie): FranchiseStrength {
+  const title = movie.title.toLowerCase()
+  const isSequel = /\b(2|ii|part|chapter|returns|rises)\b/.test(title)
+  
+  return {
+    score: isSequel ? 75 : movie.popularity > 50 ? 60 : 40,
+    isSequel,
+    franchiseName: isSequel ? 'Sequel/Franchise' : undefined,
+    previousSuccess: isSequel,
+    brandRecognition: movie.popularity > 50 ? 'high' : movie.popularity > 20 ? 'medium' : 'low'
+  }
+}
+
+function createScoutingReportFromUpcoming(movie: UpcomingMovie): ScoutingReport {
+  const domesticProj = movie.domestic_total_projection || movie.estimated_budget * 2
+  
+  return {
+    summary: `${movie.title} projects $${Math.round(domesticProj / 1000000)}M domestic with strong franchise appeal.`,
+    strengths: [`$${Math.round(domesticProj / 1000000)}M domestic projection`, 'Strong cast lineup'],
+    concerns: ['Market competition', 'Budget requirements'],
+    comparisons: ['Similar genre blockbusters'],
+    recommendation: domesticProj > 300000000 ? 'strong_buy' : domesticProj > 200000000 ? 'buy' : 'hold'
+  }
+}
+
+// Original function preserved for backwards compatibility
+export async function getDraftEligibleMoviesOriginal(): Promise<DraftMovie[]> {
   try {
     const startDate = new Date('2025-10-01')
     const endDate = new Date('2026-01-15')

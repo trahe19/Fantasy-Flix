@@ -12,6 +12,7 @@ import {
   getCurrentPickInfo,
   shuffleArray
 } from '../../lib/draft-movies'
+import { draftMovie, isMovieDrafted, getMovieDraftedBy } from '../../lib/drafted-movies'
 import { getImageUrl } from '../../lib/tmdb'
 
 const DraftPage = () => {
@@ -56,7 +57,7 @@ const DraftPage = () => {
       try {
         setLoading(true)
         setError(null)
-        const draftMovies = await getDraftEligibleMovies()
+        const draftMovies = await getDraftEligibleMovies('sample-league')
         setMovies(draftMovies)
 
         // Generate initial draft order
@@ -117,7 +118,10 @@ const DraftPage = () => {
   }
 
   const handleMovieSelect = (movie: DraftMovie) => {
-    if (!draftStarted || currentPickInfo.isComplete || movie.isDrafted) {
+    // Check if movie is already drafted in the shared system
+    const isAlreadyDrafted = isMovieDrafted(movie.id, 'sample-league')
+    
+    if (!draftStarted || currentPickInfo.isComplete || isAlreadyDrafted) {
       // Show movie details if not drafting or movie is unavailable
       setSelectedMovie(movie)
       setShowMovieDetails(true)
@@ -136,14 +140,31 @@ const DraftPage = () => {
       timeRemaining: timeRemaining
     }
 
-    setPicks(prev => [...prev, pick])
+    // Add to shared drafted movies system
+    const draftSuccess = draftMovie(
+      movie.id, 
+      movie.title, 
+      currentPickInfo.currentPlayer!.id, 
+      'sample-league',
+      currentPickInfo.round,
+      currentPickInfo.pick
+    )
 
-    // Mark movie as drafted
-    setMovies(prev => prev.map(m =>
-      m.id === movie.id
-        ? { ...m, isDrafted: true, draftedBy: currentPickInfo.currentPlayer!.name, draftPosition: currentPickInfo.overallPick }
-        : m
-    ))
+    if (draftSuccess) {
+      setPicks(prev => [...prev, pick])
+
+      // Mark movie as drafted locally
+      setMovies(prev => prev.map(m =>
+        m.id === movie.id
+          ? { ...m, isDrafted: true, draftedBy: currentPickInfo.currentPlayer!.name, draftPosition: currentPickInfo.overallPick }
+          : m
+      ))
+
+      console.log(`${movie.title} drafted by ${currentPickInfo.currentPlayer!.name}`)
+    } else {
+      alert('Failed to draft movie - it may have been drafted by another player.')
+      return
+    }
 
     // Reset timer for next pick
     setTimeRemaining(settings.pickTimeLimit)
@@ -408,11 +429,14 @@ const DraftPage = () => {
               </div>
 
               <div className="grid grid-cols-5 gap-4 overflow-y-auto h-[calc(100%-80px)] pr-2">
-                {movies.map((movie) => (
+                {movies.map((movie) => {
+                  const isGloballyDrafted = isMovieDrafted(movie.id, 'sample-league')
+                  const draftedBy = getMovieDraftedBy(movie.id, 'sample-league')
+                  return (
                   <div
                     key={movie.id}
                     className={`group relative cursor-pointer transition-all duration-200 ${
-                      movie.isDrafted
+                      isGloballyDrafted || movie.isDrafted
                         ? 'opacity-40 cursor-not-allowed'
                         : 'hover:scale-105 hover:z-10 hover:shadow-2xl'
                     }`}
@@ -420,7 +444,7 @@ const DraftPage = () => {
                     title={movie.scouting_report.summary}
                   >
                     <div className={`aspect-[2/3] relative overflow-hidden rounded-lg border-2 transition-all ${
-                      movie.isDrafted
+                      isGloballyDrafted || movie.isDrafted
                         ? 'border-red-500/50'
                         : movie.projection_confidence.level === 'high'
                           ? 'border-green-500/50 hover:border-green-400'
@@ -438,11 +462,11 @@ const DraftPage = () => {
                       />
 
                       {/* Draft Status Overlay */}
-                      {movie.isDrafted && (
+                      {(isGloballyDrafted || movie.isDrafted) && (
                         <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
                           <div className="text-center">
                             <div className="text-red-400 font-bold text-sm mb-1">DRAFTED</div>
-                            <div className="text-white text-xs">{movie.draftedBy}</div>
+                            <div className="text-white text-xs">{draftedBy ? `User ${draftedBy.split('-')[1]}` : movie.draftedBy}</div>
                             <div className="text-gray-400 text-xs">#{movie.draftPosition}</div>
                           </div>
                         </div>
@@ -553,7 +577,8 @@ const DraftPage = () => {
                       </div>
                     </div>
                   </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
           </div>

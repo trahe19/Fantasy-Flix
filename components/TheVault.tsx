@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { UpcomingMovie, getUpcomingMoviesForVault } from '../lib/upcoming-movies'
+import { UpcomingMovie, getComprehensiveMoviePool } from '../lib/upcoming-movies'
 import { getImageUrl } from '../lib/tmdb'
+import { getDraftedMovies, isMovieDrafted, getMovieDraftedBy, getAvailableMovies } from '../lib/drafted-movies'
 
 interface TheVaultProps {
   leagueId?: string
@@ -32,14 +33,12 @@ const TheVault = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'use
 
   // Live TMDB data for upcoming movies
   const [allMovies, setAllMovies] = useState<UpcomingMovie[]>([])
+  const [availableMovies, setAvailableMovies] = useState<UpcomingMovie[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Mock roster data - movies taken by league members
-  const [takenMovies] = useState<RosterSlot[]>([
-    { id: '1', userId: 'user-2', movieId: '83533' }, // Avatar: Fire and Ash
-    { id: '2', userId: 'user-3', movieId: '1061474' } // Superman
-  ])
+  // Get drafted movies for this league
+  const draftedMovies = getDraftedMovies(leagueId)
 
   // Fetch upcoming movies on component mount
   useEffect(() => {
@@ -47,8 +46,16 @@ const TheVault = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'use
       try {
         setLoading(true)
         setError(null)
-        const movies = await getUpcomingMoviesForVault()
+        console.log('Loading comprehensive movie pool...')
+        const movies = await getComprehensiveMoviePool()
+        console.log(`Loaded ${movies.length} total movies`)
+        
+        // Filter out drafted movies
+        const available = getAvailableMovies(movies, leagueId)
+        console.log(`${available.length} movies available after filtering drafted ones`)
+        
         setAllMovies(movies)
+        setAvailableMovies(available)
       } catch (err) {
         setError('Failed to load upcoming movies. Please try again later.')
         console.error('Error loading movies:', err)
@@ -58,7 +65,7 @@ const TheVault = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'use
     }
 
     loadMovies()
-  }, [])
+  }, [leagueId])
 
   const [filters, setFilters] = useState<FilterOptions>({
     search: '',
@@ -83,13 +90,13 @@ const TheVault = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'use
   }
 
   const allGenres = Array.from(new Set(
-    allMovies.flatMap(movie =>
+    availableMovies.flatMap(movie =>
       movie.genre_ids.map(id => genreMap[id as keyof typeof genreMap]).filter(Boolean)
     )
   )).sort()
 
-  // Filter and sort movies
-  const filteredMovies = allMovies
+  // Filter and sort movies (only available ones)
+  const filteredMovies = availableMovies
     .filter(movie => {
       const matchesSearch = movie.title.toLowerCase().includes(filters.search.toLowerCase()) ||
                            movie.director?.toLowerCase().includes(filters.search.toLowerCase()) ||
@@ -147,12 +154,12 @@ const TheVault = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'use
     })
 
   const isMovieTaken = (movieId: number) => {
-    return takenMovies.some(slot => slot.movieId === movieId.toString())
+    return isMovieDrafted(movieId, leagueId)
   }
 
   const getTakenByUser = (movieId: number) => {
-    const slot = takenMovies.find(slot => slot.movieId === movieId.toString())
-    return slot ? `User ${slot.userId.split('-')[1]}` : null
+    const draftedBy = getMovieDraftedBy(movieId, leagueId)
+    return draftedBy ? `User ${draftedBy.split('-')[1]}` : null
   }
 
   const handleMovieSelect = (movieId: number) => {
@@ -166,12 +173,12 @@ const TheVault = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'use
 
   const handleAddToWatchlist = (movieId: number) => {
     // In production, this would make an API call to add the movie to watchlist
-    alert(`Added "${allMovies.find(m => m.id === movieId)?.title}" to your watchlist!`)
+    alert(`Added "${availableMovies.find(m => m.id === movieId)?.title}" to your watchlist!`)
   }
 
   const handleTargetForDraft = (movieId: number) => {
     // In production, this would make an API call to target the movie for draft
-    alert(`Targeted "${allMovies.find(m => m.id === movieId)?.title}" for draft!`)
+    alert(`Targeted "${availableMovies.find(m => m.id === movieId)?.title}" for draft!`)
   }
 
   const handleViewDetails = (movieId: number) => {
@@ -187,7 +194,7 @@ const TheVault = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'use
 
     // In production, this would make an API call to add multiple movies
     const movieTitles = availableSelected.map(id =>
-      allMovies.find(m => m.id === parseInt(id))?.title
+      availableMovies.find(m => m.id === parseInt(id))?.title
     ).join(', ')
 
     alert(`Added ${availableSelected.length} movies to your watchlist: ${movieTitles}`)
@@ -742,7 +749,7 @@ const TheVault = ({ leagueId = 'sample-league', currentPeriod = 1, userId = 'use
       <div className="mt-8 text-center">
         <div className="bg-gray-900/50 backdrop-blur-sm rounded-lg p-4 inline-block border border-gray-700/50">
           <p className="text-gray-300">
-            Showing {filteredMovies.length} of {allMovies.length} movies in The Vault
+            Showing {filteredMovies.length} of {availableMovies.length} available movies • {draftedMovies.length} movies drafted
           </p>
         </div>
       </div>
