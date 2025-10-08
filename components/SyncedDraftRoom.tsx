@@ -120,8 +120,6 @@ const SyncedDraftRoom = ({ leagueId = 'sample-league', currentUser }: SyncedDraf
   
   // Create mock draft room object
   const draftRoom = {
-    id: leagueId,
-    name: 'October 2025 Draft',
     leagueId,
     draftType: 'initial' as const,
     status: 'active' as const,
@@ -132,12 +130,8 @@ const SyncedDraftRoom = ({ leagueId = 'sample-league', currentUser }: SyncedDraf
     draftOrder,
     availableMovies,
     picks: [], // Could populate with actual picks if needed
-    settings: {
-      pickTimeLimit: 120,
-      pauseBetweenPicks: 5,
-      autoStart: true,
-      allowCommissioner: true
-    }
+    createdAt: new Date().toISOString(),
+    startedAt: new Date().toISOString()
   }
 
   return (
