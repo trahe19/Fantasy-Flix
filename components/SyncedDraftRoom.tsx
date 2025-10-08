@@ -44,10 +44,58 @@ const SyncedDraftRoom = ({ leagueId = 'sample-league', currentUser }: SyncedDraf
 
   // Mock league members
   const leagueMembers = [
-    { userId: 'user-1', username: 'You', isReady: true },
-    { userId: 'user-2', username: 'MovieMaster', isReady: true },
-    { userId: 'user-3', username: 'BlockbusterBuff', isReady: true },
-    { userId: 'user-4', username: 'FilmFanatic', isReady: true }
+    { 
+      userId: 'user-1', 
+      username: 'You', 
+      displayName: 'You',
+      joinDate: new Date().toISOString(),
+      role: 'commissioner' as const,
+      period1Score: 0,
+      period2Score: 0,
+      totalScore: 0,
+      rankCurrentPeriod: 1,
+      rankOverall: 1,
+      isChampionshipEligible: true
+    },
+    { 
+      userId: 'user-2', 
+      username: 'MovieMaster', 
+      displayName: 'MovieMaster',
+      joinDate: new Date().toISOString(),
+      role: 'player' as const,
+      period1Score: 0,
+      period2Score: 0,
+      totalScore: 0,
+      rankCurrentPeriod: 2,
+      rankOverall: 2,
+      isChampionshipEligible: true
+    },
+    { 
+      userId: 'user-3', 
+      username: 'BlockbusterBuff', 
+      displayName: 'BlockbusterBuff',
+      joinDate: new Date().toISOString(),
+      role: 'player' as const,
+      period1Score: 0,
+      period2Score: 0,
+      totalScore: 0,
+      rankCurrentPeriod: 3,
+      rankOverall: 3,
+      isChampionshipEligible: true
+    },
+    { 
+      userId: 'user-4', 
+      username: 'FilmFanatic', 
+      displayName: 'FilmFanatic',
+      joinDate: new Date().toISOString(),
+      role: 'player' as const,
+      period1Score: 0,
+      period2Score: 0,
+      totalScore: 0,
+      rankCurrentPeriod: 4,
+      rankOverall: 4,
+      isChampionshipEligible: true
+    }
   ]
 
   // Mock draft order
