@@ -127,38 +127,98 @@ export async function getUpcomingMoviesForVault(page: number = 1): Promise<Upcom
 export async function getComprehensiveMoviePool(): Promise<UpcomingMovie[]> {
   try {
     const today = new Date();
-    const endDate = new Date('2026-12-31'); // Extended to end of 2026
+    const endDate = new Date('2027-12-31'); // Way extended to end of 2027
     const todayStr = today.toISOString().split('T')[0];
     const endDateStr = endDate.toISOString().split('T')[0];
-    console.log('Fetching comprehensive movie pool from', todayStr, 'to', endDateStr);
+    console.log('Fetching MASSIVE movie pool from', todayStr, 'to', endDateStr);
     
-    // Fetch multiple pages to get many more movies
+    // Fetch multiple sources to get TONS more movies
     const allMovies: TMDBMovie[] = [];
-    const maxPages = 30; // Fetch up to 30 pages (600+ movies)
+    
+    // METHOD 1: Upcoming movies with very loose filters
+    const maxPages = 50; // Increased to 50 pages
+    console.log('Method 1: Fetching upcoming movies with loose filters...');
     
     for (let currentPage = 1; currentPage <= maxPages; currentPage++) {
       try {
-        const data = await tmdbFetch(`/discover/movie?primary_release_date.gte=${todayStr}&primary_release_date.lte=${endDateStr}&page=${currentPage}&region=US&sort_by=popularity.desc&vote_count.gte=1&with_runtime.gte=60`);
+        const data = await tmdbFetch(`/discover/movie?primary_release_date.gte=${todayStr}&primary_release_date.lte=${endDateStr}&page=${currentPage}&sort_by=popularity.desc&vote_count.gte=0&with_runtime.gte=30`);
         
         if (data.results && data.results.length > 0) {
+          console.log(`Page ${currentPage}: Found ${data.results.length} movies`);
           allMovies.push(...data.results);
         } else {
-          break; // No more results
+          console.log(`Page ${currentPage}: No more results, stopping`);
+          break;
         }
         
-        // Add delay to respect API rate limits
-        await new Promise(resolve => setTimeout(resolve, 80));
+        await new Promise(resolve => setTimeout(resolve, 50)); // Faster API calls
       } catch (error) {
-        console.warn(`Error fetching page ${currentPage}:`, error);
+        console.warn(`Error fetching upcoming page ${currentPage}:`, error);
         break;
       }
     }
+    
+    console.log(`After upcoming movies: ${allMovies.length} total`);
+    
+    // METHOD 2: Popular movies regardless of release date (more selection)
+    console.log('Method 2: Adding popular movies...');
+    for (let currentPage = 1; currentPage <= 20; currentPage++) {
+      try {
+        const data = await tmdbFetch(`/movie/popular?page=${currentPage}&region=US`);
+        
+        if (data.results && data.results.length > 0) {
+          // Filter out movies already in our list and ones that are too old
+          const newMovies = data.results.filter((movie: TMDBMovie) => 
+            !allMovies.some(existing => existing.id === movie.id) &&
+            new Date(movie.release_date) >= new Date('2020-01-01') // Include recent movies too
+          );
+          console.log(`Popular page ${currentPage}: Found ${newMovies.length} new movies`);
+          allMovies.push(...newMovies);
+        } else {
+          break;
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, 50));
+      } catch (error) {
+        console.warn(`Error fetching popular page ${currentPage}:`, error);
+        break;
+      }
+    }
+    
+    console.log(`After popular movies: ${allMovies.length} total`);
+    
+    // METHOD 3: Top rated movies for variety
+    console.log('Method 3: Adding top rated movies...');
+    for (let currentPage = 1; currentPage <= 15; currentPage++) {
+      try {
+        const data = await tmdbFetch(`/movie/top_rated?page=${currentPage}&region=US`);
+        
+        if (data.results && data.results.length > 0) {
+          const newMovies = data.results.filter((movie: TMDBMovie) => 
+            !allMovies.some(existing => existing.id === movie.id) &&
+            new Date(movie.release_date) >= new Date('2018-01-01')
+          );
+          console.log(`Top rated page ${currentPage}: Found ${newMovies.length} new movies`);
+          allMovies.push(...newMovies);
+        } else {
+          break;
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, 50));
+      } catch (error) {
+        console.warn(`Error fetching top rated page ${currentPage}:`, error);
+        break;
+      }
+    }
+    
+    console.log(`After all methods: ${allMovies.length} total movies found!`);
 
     if (allMovies.length > 0) {
-      // Filter for movies likely to have substantial budgets (lowered thresholds for more movies)
+      // Filter for movies with VERY loose criteria (include almost everything)
       const substantialMovies = allMovies.filter((movie: TMDBMovie) =>
-        movie.popularity > 3 || // Lowered threshold for more movies
-        movie.vote_count > 10 || // Some community interest
+        movie.popularity > 0.5 || // Super low threshold - include almost everything
+        movie.vote_count > 0 || // Any vote at all
+        movie.title.length > 0 || // Any movie with a title
         isLikelyBlockbuster(movie) // Genre/title suggests big budget
       );
       
@@ -168,7 +228,7 @@ export async function getComprehensiveMoviePool(): Promise<UpcomingMovie[]> {
       const batchSize = 8;
       const enhancedMovies: UpcomingMovie[] = [];
       
-      for (let i = 0; i < substantialMovies.length && i < 300; i += batchSize) { // Process up to 300 movies
+      for (let i = 0; i < substantialMovies.length && i < 800; i += batchSize) { // Process up to 800 movies
         const batch = substantialMovies.slice(i, i + batchSize);
         
         const batchResults = await Promise.all(
